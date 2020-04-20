@@ -248,7 +248,7 @@ if __name__ == "__main__":
     train_inputs, train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
     test_inputs, test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
 
-    import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
 
     fit(inputs=train_outputs,
         outputs=train_inputs,
