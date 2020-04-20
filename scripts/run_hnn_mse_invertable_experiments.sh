@@ -1,10 +1,25 @@
+#!/bin/bash
+
+#SBATCH -J run_MLE-nb_plays-100-units-100-activation-tanh-batch-size-500
+#SBATCH -D /home/zxchen/feng
+#SBATCH -o ./tmp/run_MLE-nb_plays-100-units-100-activation-tanh-batch-size-500.out
+#SBATCH --nodes=1
+#SBATCH --mem=80G
+#SBATCH --time=30-00:00:00
+#SBATCH --partition=big
+#SBATCH --mail-type=end
+#SBATCH --mail-user=czxczf@gmail.com
+
+hostname
+source /home/zxchen/.venv3/bin/activate
+
 ########################## NO DIFF WEIGHT, NO NOISE ###################################
 # # elu
-python prove_hnn_mse_invertable.py --epochs 10 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 1 --__activation__ elu --force_train
+# python prove_hnn_mse_invertable.py --epochs 5000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 1 --__activation__ elu --force_train
 # python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 2 --__activation__ elu --force_train
 # python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 1 --__activation__ elu --force_train
 # python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 2 --__activation__ elu --force_train
-# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 4 --__units__ 2 --__activation__ elu --force_train
+python prove_hnn_mse_invertable.py --epochs 5000 --activation tanh --mu 0 --sigma 0 --lr 0.003 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 4 --__units__ 2 --__activation__ elu --force_train
 
 # # # elu
 # python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ elu --force_train
@@ -21,6 +36,31 @@ python prove_hnn_mse_invertable.py --epochs 10 --activation tanh --mu 0 --sigma 
 # python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &
 # python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ elu --force_train &
 # python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &
+
+########################## NO DIFF WEIGHT, NO NOISE ###################################
+# # tanh
+# python prove_hnn_mse_invertable.py --epochs 5000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 1 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 2 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 1 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 2 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 4 --__units__ 2 --__activation__ tanh --force_train
+
+# # # tanh
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 10 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train
+
+# # tanh
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train &
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ tanh --force_train &
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train &
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train &
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ tanh --force_train &
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ tanh --force_train &
+# python prove_hnn_mse_invertable.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ tanh --force_train &
+
 
 # not run
 # # elu
