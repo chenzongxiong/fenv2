@@ -273,3 +273,4 @@ if __name__ == "__main__":
                                        weights_name=weights_fname)
 
     tdata.DatasetSaver.save_data(test_inputs, predictions, predict_fname)
+    LOG.debug("==================FINISHED=================================================")
