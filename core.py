@@ -1372,15 +1372,9 @@ class MyModel(Layer):
         for nb_play in range(nb_plays):
             if diff_weights is True:
                 weight = 0.5 / (_width * (1 + nb_play)) # width range from (0.1, ... 0.1 * nb_plays)
-                # weight = 0.5 / (_width * (1 + nb_play)) # width range from (0.1, ... 0.1 * nb_plays)
-                # weight = nb_play # width range from (0.1, ... 0.1 * nb_plays)
             else:
                 weight = 1.0
-
-            weight = 2 * (nb_play + 1)                  # width range from (0.1, ... 0.1 * nb_plays)
             LOG.debug("MyModel {} generates {} with Weight: {}".format(self._ensemble, colors.red("Play #{}".format(nb_play+1)), weight))
-            # if debug is True:
-            #     weight = 1.0
 
             play = Play(units=units,
                         batch_size=batch_size,

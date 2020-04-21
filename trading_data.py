@@ -12,6 +12,53 @@ LOG = logging.getLogger(__name__)
 
 class DatasetGenerator(object):
     @classmethod
+    def dima_sequence(cls, points=1000):
+        # NOTES: only for debugging
+        a = [0, 1, 5, 0, 3, 1, 5]               #dima dataset
+        inputs = a*(1006 // len(a))
+        inputs.insert(0, 0)
+        inputs.insert(1, -100)
+        inputs = np.array(inputs[:1000], dtype=np.float32)
+
+        inputs[600:700] = inputs[600:700] / 10.0
+        inputs[700:750] = inputs[700:750] / 7.0
+        inputs[750:800] = inputs[750:800] / 6.0
+        inputs[800:850] = inputs[800:850] / 5.0
+        inputs[850:900] = inputs[850:900] / 4.0
+        inputs[900:950] = inputs[900:950] / 3.0
+        inputs[950:975] = inputs[950:975] / 1.0
+        inputs[975:1000] = inputs[975:1000] / 0.5
+        return inputs
+
+    @classmethod
+    def pavel_sequence(cls, points, mu=0):
+        np.random.seed(0)
+        inputs1 = 5.0 * np.cos(0.1 * np.linspace(-40*np.pi, 40*np.pi, points))
+        inputs = (inputs1).astype(np.float32)
+
+        sigma_list = [0.1, 0.5, 1, 2, 3, 4, 5]
+
+        points_for_training = 600
+        noise = np.zeros((points,))
+        for i in range(points_for_training):
+            sigma = i % len(sigma_list)
+            n = np.random.normal(loc=mu, scale=sigma, size=1).astype(np.float32)
+            noise[i] = n
+
+        chunk_size = (points - points_for_training) // len(sigma_list)
+        remaining = (points - points_for_training) % (len(sigma_list))
+        chunk_list = [chunk_size] * len(sigma_list)
+
+        for idx, (sigma, chunk) in enumerate(zip(sigma_list, chunk_list)):
+            n = np.random.normal(loc=mu, scale=sigma, size=chunk).astype(np.float32)
+            noise[600+idx*chunk:600+(idx+1)*chunk] = n
+
+        noise[points-remaining:] = np.random.normal(loc=mu, scale=sigma_list[-1], size=remaining).astype(np.float32)
+        inputs += noise
+
+        return inputs
+
+    @classmethod
     def systhesis_input_generator(cls, points):
         # NOTE: x = sin(t) + 3 sin(1.3 t)  + 1.2 sin (1.6 t)
         inputs1 = np.sin(np.linspace(-2*np.pi, 2*np.pi, points))
@@ -40,9 +87,35 @@ class DatasetGenerator(object):
             # import ipdb; ipdb.set_trace()
             # sigma = 5 * sigma
             # sigma = np.abs(sigma * np.cos(0.1 * np.linspace(-10 * np.pi, 10 * np.pi, points))) + 1e-3
-            inputs = (inputs2).astype(np.float32)
-            noise = np.random.normal(loc=mu, scale=sigma, size=points).astype(np.float32)
+            inputs = (inputs1).astype(np.float32)
+            # NOTES: sigma = 8 + inputs2
+
+            # noise = np.random.normal(loc=mu, scale=sigma, size=points).astype(np.float32)
+            # inputs += noise
+
+            # debuging
+            inputs *= 5.0
+            sigma_list = [0.1, 0.5, 1, 2, 3, 4, 5]
+
+            points_for_training = 600
+            noise = np.zeros((points,))
+            for i in range(points_for_training):
+                sigma = i % len(sigma_list)
+                n = np.random.normal(loc=mu, scale=sigma, size=1).astype(np.float32)
+                noise[i] = n
+
+            chunk_size = (points - points_for_training) // len(sigma_list)
+            remaining = (points - points_for_training) % (len(sigma_list))
+            chunk_list = [chunk_size] * len(sigma_list)
+
+            for idx, (sigma, chunk) in enumerate(zip(sigma_list, chunk_list)):
+                n = np.random.normal(loc=mu, scale=sigma, size=chunk).astype(np.float32)
+                noise[600+idx*chunk:600+(idx+1)*chunk] = n
+
+            noise[points-remaining:] = np.random.normal(loc=mu, scale=sigma_list[-1], size=remaining).astype(np.float32)
             inputs += noise
+
+
         return inputs
 
     @classmethod
@@ -159,6 +232,10 @@ class DatasetGenerator(object):
                 _inputs = cls.systhesis_sin_input_generator(points, mu, sigma, with_noise=with_noise)
             elif method == 'mixed':
                 _inputs = cls.systhesis_mixed_input_generator(points, mu, sigma, with_noise=with_noise)
+            elif method == 'debug-pavel':
+                _inputs = cls.pavel_sequence(points, mu)
+            elif method == 'debug-dima':
+                _inputs = cls.dima_sequence(points)
             else:
                 raise
         else:

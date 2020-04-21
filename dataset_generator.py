@@ -157,7 +157,9 @@ def model_nb_plays_generator_with_noise(points=100,
                                         diff_weights=False):
     # sigma = 7
 
-    method = 'sin'
+    # method = 'sin'
+    method = 'debug-dima'
+    # method = 'debug-pavel'
 
     run_test = False
 
@@ -180,7 +182,7 @@ def model_nb_plays_generator_with_noise(points=100,
     inputs = None
 
     start = time.time()
-    individual = True
+    individual = False
     if individual is False:
         inputs, outputs = tdata.DatasetGenerator.systhesis_model_generator(inputs=inputs,
                                                                            nb_plays=nb_plays,
@@ -319,6 +321,9 @@ if __name__ == "__main__":
     parser.add_argument("--points", dest="points",
                         required=False,
                         type=int)
+    parser.add_argument("--method", dest="method",
+                        required=False,
+                        type=str)
 
     parser.add_argument('--diff-weights', dest='diff_weights',
                         required=False,
