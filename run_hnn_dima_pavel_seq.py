@@ -42,7 +42,8 @@ def fit(inputs,
                       units=units,
                       activation=activation,
                       nb_plays=nb_plays,
-                      ensemble=ensemble)
+                      ensemble=ensemble,
+                      diff_weights=True)
     LOG.debug("Learning rate is {}".format(learning_rate))
     mymodel.fit(inputs,
                 outputs,
