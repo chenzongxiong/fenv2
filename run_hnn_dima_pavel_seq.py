@@ -24,7 +24,8 @@ def fit(inputs,
         learning_rate=0.001,
         loss_file_name="./tmp/my_model_loss_history.csv",
         weights_name='model.h5',
-        epochs=1000):
+        epochs=1000,
+        ensemble=1):
 
     # steps_per_epoch = batch_size
 
@@ -40,7 +41,8 @@ def fit(inputs,
                       timestep=timestep,
                       units=units,
                       activation=activation,
-                      nb_plays=nb_plays)
+                      nb_plays=nb_plays,
+                      ensemble=ensemble)
     LOG.debug("Learning rate is {}".format(learning_rate))
     mymodel.fit(inputs,
                 outputs,
@@ -61,7 +63,8 @@ def predict(inputs,
             units=1,
             activation='tanh',
             nb_plays=1,
-            weights_name='model.h5'):
+            weights_name='model.h5',
+            ensemble=1):
 
     with open("{}/{}plays/input_shape.txt".format(weights_name[:-3], nb_plays), 'r') as f:
         line = f.read()
@@ -85,7 +88,8 @@ def predict(inputs,
                       units=units,
                       activation=activation,
                       nb_plays=nb_plays,
-                      parallel_prediction=True)
+                      parallel_prediction=True,
+                      ensemble=ensemble)
 
     mymodel.load_weights(weights_fname)
     op_outputs = mymodel.get_op_outputs_parallel(inputs[0])
@@ -150,6 +154,11 @@ if __name__ == "__main__":
                         required=False,
                         action="store_true")
 
+    parser.add_argument('--ensemble', dest='ensemble',
+                        required=False,
+                        type=int,
+                        default=1)
+
     argv = parser.parse_args(sys.argv[1:])
 
 
@@ -157,6 +166,7 @@ if __name__ == "__main__":
     # method = 'debug-pavel'
     # method = 'debug-dima'
     method = argv.method
+    ensemble = argv.ensemble
 
     input_dim = 1
     state = 0
@@ -192,7 +202,8 @@ if __name__ == "__main__":
                                                                  units=units,
                                                                  nb_plays=nb_plays,
                                                                  points=points,
-                                                                 input_dim=input_dim)
+                                                                 input_dim=input_dim,
+                                                                 ensemble=ensemble)
 
     loss_history_fname = constants.DATASET_PATH[loss_history_fname_key].format(method=method,
                                                                                activation=activation,
@@ -207,6 +218,7 @@ if __name__ == "__main__":
                                                                                __state__=__state__,
                                                                                __units__=__units__,
                                                                                __nb_plays__=__nb_plays__,
+                                                                               ensemble=ensemble,
                                                                                loss=loss_name)
 
     predict_fname = constants.DATASET_PATH[predict_fname_key].format(method=method,
@@ -222,6 +234,7 @@ if __name__ == "__main__":
                                                                     __state__=__state__,
                                                                     __units__=__units__,
                                                                     __nb_plays__=__nb_plays__,
+                                                                    ensemble=ensemble,
                                                                     loss=loss_name)
 
     weights_fname = constants.DATASET_PATH[weight_fname_key].format(method=method,
@@ -237,11 +250,13 @@ if __name__ == "__main__":
                                                                     __state__=__state__,
                                                                     __units__=__units__,
                                                                     __nb_plays__=__nb_plays__,
+                                                                    ensemble=ensemble,
                                                                     loss=loss_name)
 
     LOG.debug("==================== INFO ====================")
     LOG.debug(colors.red("Test multiple plays"))
     LOG.debug(colors.cyan("method: {}".format(method)))
+    LOG.debug(colors.cyan("ensemble: {}".format(ensemble)))
     LOG.debug(colors.cyan("input_fname: {}".format(input_fname)))
     LOG.debug(colors.cyan("predict_fname: {}".format(predict_fname)))
     LOG.debug(colors.cyan("loss_history_file: {}".format(loss_history_fname)))
@@ -263,14 +278,16 @@ if __name__ == "__main__":
         learning_rate=learning_rate,
         loss_file_name=loss_history_fname,
         weights_name=weights_fname,
-        epochs=epochs)
+        epochs=epochs,
+        ensemble=ensemble)
 
     test_inputs, predictions = predict(inputs=[train_inputs, test_inputs],
                                        outputs=[train_outputs, test_outputs],
                                        units=__units__,
                                        activation=__activation__,
                                        nb_plays=__nb_plays__,
-                                       weights_name=weights_fname)
+                                       weights_name=weights_fname,
+                                       ensemble=ensemble)
 
     tdata.DatasetSaver.save_data(test_inputs, predictions, predict_fname)
     LOG.debug("==================FINISHED=================================================")

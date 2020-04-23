@@ -25,6 +25,12 @@ if __name__ == "__main__":
     parser.add_argument('--markov-chain', dest='markov_chain',
                         required=False,
                         action="store_true")
+
+    parser.add_argument('--method', dest='method',
+                        required=False,
+                        type=str,
+                        default='sin')
+
     # diff weights: sigma = 8,
     # sigma = 2
 
@@ -34,7 +40,7 @@ if __name__ == "__main__":
     argv = parser.parse_args(sys.argv[1:])
 
 
-    method = 'sin'
+    method = argv.method
     state = 0
     input_dim = 1
 
@@ -42,7 +48,7 @@ if __name__ == "__main__":
     units = 1
     mu = 0
     sigma = int(argv.sigma)
-    points = 2000
+    points = 1000
 
     # LOG.debug("====================INFO====================")
     # LOG.debug(colors.cyan("units: {}".format(units)))
@@ -65,8 +71,11 @@ if __name__ == "__main__":
         __units__LIST = [8, 16, 32, 64, 128, 256]
         activation = None
     elif argv.diff_weights:
-        nb_plays_LIST = [50, 100, 500]
+        # nb_plays_LIST = [50, 100, 500]
+        nb_plays_LIST = [50]
         activation = 'tanh'
+        if method == 'debug-pavel' or method == 'debug-dima':
+            activation = None
     else:
         nb_plays_LIST = [1, 50, 100, 500]
         activation = 'tanh'
@@ -86,7 +95,7 @@ if __name__ == "__main__":
     if argv.markov_chain:
         excel_fname = './new-dataset/lstm/diff_weights/method-sin/lstm-mc-mle-sigma-{}-__activation__-{}.xlsx'.format(sigma, __activation__)
     elif argv.diff_weights:
-        excel_fname = './new-dataset/lstm/diff_weights/method-sin/lstm-all-sigma-{}.xlsx'.format(sigma)
+        excel_fname = './new-dataset/lstm/diff_weights/method-{}/lstm-all-sigma-{}.xlsx'.format(method, sigma)
     else:
         excel_fname = './new-dataset/lstm/method-sin/lstm-all-sigma-{}.xlsx'.format(sigma)
 
@@ -133,9 +142,9 @@ if __name__ == "__main__":
                 loss_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mle', __activation__=__activation__)
                 loss_file_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_loss_file'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, learning_rate=lr, loss='mle', __activation__=__activation__)
             elif argv.diff_weights:
-                prediction_fname = constants.DATASET_PATH['lstm_diff_weights_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__)
-                loss_fname = constants.DATASET_PATH['lstm_diff_weights_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__)
-                loss_file_fname = constants.DATASET_PATH['lstm_diff_weights_loss_file'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, learning_rate=lr)
+                prediction_fname = constants.DATASET_PATH['lstm_diff_weights_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mse')
+                loss_fname = constants.DATASET_PATH['lstm_diff_weights_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mse')
+                loss_file_fname = constants.DATASET_PATH['lstm_diff_weights_loss_file'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, learning_rate=lr, loss='mse')
             else:
                 prediction_fname = constants.DATASET_PATH['lstm_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__)
                 loss_fname = constants.DATASET_PATH['lstm_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__)
