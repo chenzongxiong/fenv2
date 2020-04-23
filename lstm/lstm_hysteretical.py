@@ -72,7 +72,6 @@ def lstm(input_fname, units, epochs=1000, weights_fname=None, force_train=False,
 
 
 def mle_loss(model, mu, sigma, activation='tanh'):
-    # TODO: add elu activation
     def tanh_loss(y_true, y_pred):
         # Extract weights from layers
         lstm_kernel = model.layers[1].cell.kernel
@@ -320,6 +319,11 @@ if __name__ == "__main__":
                         default='tanh',
                         type=str),
 
+    parser.add_argument('--method', dest='method',
+                        required=False,
+                        default='sin',
+                        type=str),
+
     argv = parser.parse_args(sys.argv[1:])
 
     activation = argv.activation
@@ -335,7 +339,8 @@ if __name__ == "__main__":
     lr = argv.lr
     loss = argv.loss
     state = 0
-    method = 'sin'
+    method = argv.method
+
     input_dim = 1
     markov_chain = argv.mc
     if markov_chain is True:
@@ -360,7 +365,7 @@ if __name__ == "__main__":
     LOG.debug("====================INFO====================")
     LOG.debug(colors.cyan("units: {}".format(units)))
     LOG.debug(colors.cyan("__units__: {}".format(__units__)))
-    # LOG.debug(colors.cyan("method: {}".format(method)))
+    LOG.debug(colors.cyan("method: {}".format(method)))
     LOG.debug(colors.cyan("nb_plays: {}".format(nb_plays)))
     # LOG.debug(colors.cyan("input_dim: {}".format(input_dim)))
     # LOG.debug(colors.cyan("state: {}".format(state)))
@@ -394,3 +399,4 @@ if __name__ == "__main__":
 
     tdata.DatasetSaver.save_data(test_inputs, predictions, prediction_fname)
     tdata.DatasetSaver.save_loss({"rmse": float(rmse), "diff_tick": float(diff_tick)}, loss_fname)
+    LOG.debug('==================FINISHED=========================================================')
