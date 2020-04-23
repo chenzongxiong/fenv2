@@ -1,7 +1,6 @@
 import os
 import json
 import numpy as np
-import core
 import utils
 import colors
 import log as logging
@@ -160,6 +159,7 @@ class DatasetGenerator(object):
                                      sigma=0.01,
                                      with_noise=False,
                                      individual=False):
+        import core
         if with_noise is True:
             if method == "sin":
                 LOG.debug("Generate data with noise via sin method")
@@ -196,6 +196,7 @@ class DatasetGenerator(object):
 
     @classmethod
     def systhesis_play_generator(cls, points=1000, inputs=None):
+        import core
         if inputs is None:
             _inputs = cls.systhesis_input_generator(points)
         else:
@@ -222,7 +223,7 @@ class DatasetGenerator(object):
                                   method=None,
                                   diff_weights=False,
                                   individual=False):
-
+        import core
         if inputs is not None:
             points = inputs.shape[-1]
 

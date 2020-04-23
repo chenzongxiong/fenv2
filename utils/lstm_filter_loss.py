@@ -66,8 +66,8 @@ if __name__ == "__main__":
     __activation__ = argv.__activation__
 
     if markov_chain is True:
-        # log/lstm-mle-lr-0.005-activation-None-nb_plays-20-units-1-points-1000-mu-0-sigma-110-__activation__-tanh-__units__-256.log
-        fname="./log/lstm-mle-lr-{lr}-activation-{activation}-nb_plays-{nb_plays}-units-{units}-points-{points}-mu-{mu}-sigma-{sigma}-__activation__-{__activation__}-__units__-{__units__}.log".format(
+        # tmp/lstm-mle-lr-0.005-activation-None-nb_plays-20-units-1-points-1000-mu-0-sigma-110-__activation__-tanh-__units__-256.log
+        fname="./tmp/lstm-mle-lr-{lr}-activation-{activation}-nb_plays-{nb_plays}-units-{units}-points-{points}-mu-{mu}-sigma-{sigma}-__activation__-{__activation__}-__units__-{__units__}.log".format(
             activation=activation,
             lr=lr,
             mu=mu,
@@ -96,19 +96,104 @@ if __name__ == "__main__":
             loss='mle'
             )
     elif argv.diff_weights:
-        fname="./log/lstm-diff-weights-activation-{activation}-lr-{lr}-mu-{mu}-sigma-{sigma}-nb_play-{nb_plays}-units-{units}-__units__-{__units__}-points-{points}.log".format(
-            activation=activation,
-            lr=lr,
-            mu=mu,
-            sigma=sigma,
-            nb_plays=nb_plays,
-            units=units,
-            __units__=__units__,
-            points=points
-        )
+        # fname="./tmp/lstm-diff-weights-activation-{activation}-lr-{lr}-mu-{mu}-sigma-{sigma}-nb_play-{nb_plays}-units-{units}-__units__-{__units__}-points-{points}.log".format(
+        #     activation=activation,
+        #     lr=lr,
+        #     mu=mu,
+        #     sigma=sigma,
+        #     nb_plays=nb_plays,
+        #     units=units,
+        #     __units__=__units__,
+        #     points=points
+        # )
+        ################################################################################
+        # method = 'debug-pavel'
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 1
+        # lr = 0.001
+        # seq = 0
+        ################################################################################
+        # method = 'debug-pavel'
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 8
+        # lr = 0.001
+        # seq = 1
 
-        log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/mse-loss-lr-{lr}.csv".format(
-            method='sin',
+        ################################################################################
+        # method = 'debug-pavel'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 16
+        # lr = 0.001
+        # seq = 2
+
+        ################################################################################
+        # method = 'debug-pavel'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 32
+        # lr = 0.001
+        # seq = 3
+
+        ################################################################################
+        # method = 'debug-pavel'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 64
+        # lr = 0.001
+        # seq = 4
+        ################################################################################
+        # method = 'debug-pavel'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 128
+        # lr = 0.001
+        # seq = 5
+        ################################################################################
+        # method = 'debug-pavel'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 256
+        # lr = 0.001
+        # seq = 6
+
+
+        fname="./tmp/run-lstm-pavel-dima-sequence-{}.log".format(seq)
+
+        log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/loss-mse/history-lr-{lr}.csv".format(
+            method=method,
             activation=activation,
             state=0,
             input_dim=1,
@@ -121,7 +206,7 @@ if __name__ == "__main__":
             lr=lr
             )
     else:
-        fname="./log/lstm-activation-{activation}-lr-{lr}-mu-{mu}-sigma-{sigma}-nb_play-{nb_plays}-units-{units}-__units__-{__units__}-points-{points}.log".format(
+        fname="./tmp/lstm-activation-{activation}-lr-{lr}-mu-{mu}-sigma-{sigma}-nb_play-{nb_plays}-units-{units}-__units__-{__units__}-points-{points}.log".format(
             activation=activation,
             lr=lr,
             mu=mu,
