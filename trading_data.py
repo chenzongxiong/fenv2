@@ -20,14 +20,24 @@ class DatasetGenerator(object):
         inputs.insert(1, -100)
         inputs = np.array(inputs[:1000], dtype=np.float32)
 
-        inputs[600:700] = inputs[600:700] / 10.0
-        inputs[700:750] = inputs[700:750] / 7.0
-        inputs[750:800] = inputs[750:800] / 6.0
-        inputs[800:850] = inputs[800:850] / 5.0
-        inputs[850:900] = inputs[850:900] / 4.0
-        inputs[900:950] = inputs[900:950] / 3.0
-        inputs[950:975] = inputs[950:975] / 1.0
-        inputs[975:1000] = inputs[975:1000] / 0.5
+        # inputs[600:700] = inputs[600:700] / 10.0
+        # inputs[700:750] = inputs[700:750] / 7.0
+        # inputs[750:800] = inputs[750:800] / 6.0
+        # inputs[800:850] = inputs[800:850] / 5.0
+        # inputs[850:900] = inputs[850:900] / 4.0
+        # inputs[900:950] = inputs[900:950] / 3.0
+        # inputs[950:975] = inputs[950:975] / 1.0
+        # inputs[975:1000] = inputs[975:1000] / 0.5
+
+
+        inputs[600:650] = inputs[600:650] / 10.0
+        inputs[650:700] = inputs[650:700] / 7.0
+        inputs[700:750] = inputs[700:750] / 6.0
+        inputs[750:800] = inputs[750:800] / 5.0
+        inputs[800:850] = inputs[800:850] / 4.0
+        inputs[850:900] = inputs[850:900] / 3.0
+        inputs[900:950] = inputs[900:950] / 1.0
+        inputs[950:1000] = inputs[950:1000] / 0.5
         return inputs
 
     @classmethod
