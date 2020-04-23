@@ -107,87 +107,84 @@ if __name__ == "__main__":
         #     points=points
         # )
         ################################################################################
-        # method = 'debug-pavel'
-        # method = 'debug-dima'
-        # activation = None
-        # mu = 0
-        # sigma = 0
-        # nb_plays = 50
-        # units = 50
-        # points = 1000
-        # __units__ = 1
-        # lr = 0.001
-        # seq = 0
+        method = 'debug-dima'
+        activation = None
+        mu = 0
+        sigma = 0
+        nb_plays = 50
+        units = 50
+        points = 1000
+        __units__ = 1
+        lr = 0.001
+        seq = 0
         ################################################################################
         # method = 'debug-pavel'
-        # method = 'debug-dima'
-        # activation = None
-        # mu = 0
-        # sigma = 0
-        # nb_plays = 50
-        # units = 50
-        # points = 1000
-        # __units__ = 8
-        # lr = 0.001
-        # seq = 1
+        method = 'debug-dima'
+        activation = None
+        mu = 0
+        sigma = 0
+        nb_plays = 50
+        units = 50
+        points = 1000
+        __units__ = 8
+        lr = 0.001
+        seq = 1
+        ################################################################################
+        method = 'debug-dima'
+        activation = None
+        mu = 0
+        sigma = 0
+        nb_plays = 50
+        units = 50
+        points = 1000
+        __units__ = 16
+        lr = 0.001
+        seq = 2
+        ################################################################################
+        method = 'debug-dima'
+        activation = None
+        mu = 0
+        sigma = 0
+        nb_plays = 50
+        units = 50
+        points = 1000
+        __units__ = 32
+        lr = 0.001
+        seq = 3
 
         ################################################################################
-        # method = 'debug-pavel'
-        # activation = None
-        # mu = 0
-        # sigma = 0
-        # nb_plays = 50
-        # units = 50
-        # points = 1000
-        # __units__ = 16
-        # lr = 0.001
-        # seq = 2
-
+        method = 'debug-dima'
+        activation = None
+        mu = 0
+        sigma = 0
+        nb_plays = 50
+        units = 50
+        points = 1000
+        __units__ = 64
+        lr = 0.001
+        seq = 4
         ################################################################################
-        # method = 'debug-pavel'
-        # activation = None
-        # mu = 0
-        # sigma = 0
-        # nb_plays = 50
-        # units = 50
-        # points = 1000
-        # __units__ = 32
-        # lr = 0.001
-        # seq = 3
-
+        method = 'debug-dima'
+        activation = None
+        mu = 0
+        sigma = 0
+        nb_plays = 50
+        units = 50
+        points = 1000
+        __units__ = 128
+        lr = 0.001
+        seq = 5
         ################################################################################
-        # method = 'debug-pavel'
-        # activation = None
-        # mu = 0
-        # sigma = 0
-        # nb_plays = 50
-        # units = 50
-        # points = 1000
-        # __units__ = 64
-        # lr = 0.001
-        # seq = 4
-        ################################################################################
-        # method = 'debug-pavel'
-        # activation = None
-        # mu = 0
-        # sigma = 0
-        # nb_plays = 50
-        # units = 50
-        # points = 1000
-        # __units__ = 128
-        # lr = 0.001
-        # seq = 5
-        ################################################################################
-        # method = 'debug-pavel'
-        # activation = None
-        # mu = 0
-        # sigma = 0
-        # nb_plays = 50
-        # units = 50
-        # points = 1000
-        # __units__ = 256
-        # lr = 0.001
-        # seq = 6
+        method = 'debug-dima'
+        activation = None
+        mu = 0
+        sigma = 0
+        nb_plays = 50
+        units = 50
+        points = 1000
+        __units__ = 256
+        lr = 0.001
+        seq = 6
 
 
         fname="./tmp/run-lstm-pavel-dima-sequence-{}.log".format(seq)
