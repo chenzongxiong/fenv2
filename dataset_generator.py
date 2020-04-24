@@ -106,11 +106,10 @@ def model_generator_with_noise():
 def model_genertor_with_mc():
     mu = 0
     sigma = 0.2
-    method = 'sin'
-    points = 5000
+    method = 'mc'
+    points = 1000
     with_noise = True
     activation = 'tanh'
-    # activation = None
     input_dim = 1
     state = 0
     nb_plays = 50
@@ -158,8 +157,9 @@ def model_nb_plays_generator_with_noise(points=100,
     # sigma = 7
 
     # method = 'sin'
-    method = 'debug-dima'
+    # method = 'debug-dima'
     # method = 'debug-pavel'
+    method = 'mc'
 
     run_test = False
 
@@ -180,8 +180,14 @@ def model_nb_plays_generator_with_noise(points=100,
     LOG.debug("generate model data for method {}, units {}, nb_plays {}, mu: {}, sigma: {}, points: {}, activation: {}, input_dim: {}".format(method, units, nb_plays, mu, sigma, points, activation, input_dim))
 
     inputs = None
-
     start = time.time()
+
+    if method == 'mc':
+        if sigma <= 0:
+            raise Exception("In method mc, sigma must be greater than 0")
+
+        inputs = tdata.DatasetGenerator.systhesis_markov_chain_generator(points, mu, sigma)
+
     individual = False
     if individual is False:
         inputs, outputs = tdata.DatasetGenerator.systhesis_model_generator(inputs=inputs,
@@ -226,7 +232,10 @@ def model_nb_plays_generator_with_noise(points=100,
                                                     input_dim=input_dim)
 
     LOG.debug(colors.cyan("Write  data to file {}".format(fname)))
-    tdata.DatasetSaver.save_data(inputs, outputs, fname)
+    if method != 'mc':
+        tdata.DatasetSaver.save_data(inputs, outputs, fname)
+    elif method == 'mc':
+        tdata.DatasetSaver.save_data(outputs, inputs, fname)
 
 
 def generate_debug_data():
