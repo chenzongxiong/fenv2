@@ -7,7 +7,7 @@
 #SBATCH --constraint "AMD"
 #SBATCH --mem=80G
 #SBATCH --time=2-00:00:00
-#SBATCH --partition=big,small
+#SBATCH --partition=big
 #SBATCH --mail-type=end
 #SBATCH --mail-user=czxczf@gmail.com
 #SBATCH --array=0-119
@@ -33,7 +33,7 @@ function run_pavel {
     ensemble=$2
     host_name=`hostname`
     echo "Run pavel with  __units__=${__unit__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}, ensemble=${ensemble}"
-    # python lstm/lstm_hysteretical.py --epochs 3000 --force_train --lr 0.001 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ ${__unit__} --method debug-pavel --loss mse --diff-weights --ensemble ${ensemble}
+    python lstm/lstm_hysteretical.py --epochs 3000 --force_train --lr 0.001 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ ${__unit__} --method debug-pavel --loss mse --diff-weights --ensemble ${ensemble}
 }
 
 function run_dima {
@@ -41,7 +41,7 @@ function run_dima {
     ensemble=$2
     host_name = `hostname`
     echo "Run dima with  __units__=${__unit__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}, ensemble ${ensemble}"
-    # python lstm/lstm_hysteretical.py --epochs 3000 --force_train --lr 0.001 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ ${__unit__} --method debug-dima --loss mse --diff-weights --ensemble ${ensemble}
+    python lstm/lstm_hysteretical.py --epochs 3000 --force_train --lr 0.001 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ ${__unit__} --method debug-dima --loss mse --diff-weights --ensemble ${ensemble}
 }
 
 function run_256 {
@@ -51,6 +51,6 @@ function run_256 {
     python lstm/lstm_hysteretical.py --epochs 5000 --force_train --lr 0.01 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ 256 --method ${method} --loss mse --diff-weights
 }
 
-# run_pavel ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}
+run_pavel ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}
 run_dima ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}
 # run_256 ${method_array[SLURM_ARRAY_TASK_ID]}

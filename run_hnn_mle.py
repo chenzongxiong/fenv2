@@ -37,7 +37,8 @@ def fit(inputs,
 
     # epochs = 20000
     # epochs = 10000
-    epochs = 10000
+    epochs = 10
+
     start = time.time()
     input_dim = batch_size
 
@@ -531,6 +532,13 @@ if __name__ == "__main__":
                         default=False, action='store_true')
     parser.add_argument('--visualize_activated_plays', dest='visualize_activated_plays',
                         default=False, action='store_true')
+    parser.add_argument('--mu', dest='mu',
+                        default=0,
+                        type=float)
+    parser.add_argument('--sigma', dest='sigma',
+                        default=110,
+                        type=float)
+
     parser.add_argument('--__mu__', dest='__mu__',
                         default=0,
                         type=float)
@@ -545,6 +553,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--learnable-mu', dest='learnable_mu',
                         default=False, action='store_true')
+    parser.add_argument('--method', dest='method',
+                        default='sin', type=str)
 
     argv = parser.parse_args(sys.argv[1:])
     # Hyper Parameters
@@ -556,14 +566,16 @@ if __name__ == "__main__":
     # loss_name = 'mse'
     loss_name = 'mle'
 
-    method = 'sin'
+    method = argv.method
+
     # method = 'mixed'
     # method = 'noise'
     interp = 1
     # do_prediction = False
     do_prediction = argv.predict
     do_confusion_matrix = False
-    mc_mode = True
+    mc_mode = False
+
     do_trend = argv.trend
     do_plot = argv.plot
     do_visualize_activated_plays = argv.visualize_activated_plays
@@ -574,8 +586,10 @@ if __name__ == "__main__":
 
     run_test = False
 
-    mu = 0
-    sigma = 110
+    # mu = 0
+    # sigma = 110
+    mu = argv.mu
+    sigma = argv.sigma
 
     points = 1000
     input_dim = 1
@@ -886,8 +900,10 @@ if __name__ == "__main__":
     else:
         LOG.debug("START to FIT via {}".format(colors.red(loss_name.upper())))
         _inputs, _outputs = inputs[:2000], outputs[:2000]
-        train_inputs, train_outputs = _inputs[:1500], _outputs[:1500]
-        test_inputs, test_outputs = _inputs[1500:], _outputs[1500:]
+        # train_inputs, train_outputs = _inputs[:1500], _outputs[:1500]
+        # test_inputs, test_outputs = _inputs[1500:], _outputs[1500:]
+        train_inputs, train_outputs = _inputs[:600], _outputs[:600]
+        test_inputs, test_outputs = _inputs[600:], _outputs[600:]
 
         fit(inputs=train_inputs,
             outputs=train_outputs,
@@ -914,3 +930,4 @@ if __name__ == "__main__":
 
     LOG.debug("Write data into predicted_fname: {}".format(predicted_fname))
     tdata.DatasetSaver.save_data(inputs, predictions, predicted_fname)
+    LOG.debug('========================================FINISHED========================================')
