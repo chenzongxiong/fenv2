@@ -165,7 +165,8 @@ def model_nb_plays_generator_with_noise(points=100,
 
     input_dim = 1
     state = 0
-
+    mu = 0.003
+    sigma = 0.01
     if with_noise is False:
         mu = 0
         sigma = 0
