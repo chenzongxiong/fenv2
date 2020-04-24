@@ -21,8 +21,11 @@
 # experiments for non-fixed mu
 # python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 2000 --ensemble 1000 --force-train --learnable-mu &> log/hnn-activation-None-lr-0.07-mu-0-sigma-110-nb_play-20-units-10000-__nb_plays__-25-__units__-25-__activation__-elu-points-2000-ensembel-1000.log
 
-python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 1 --mu 0 --sigma 1 --method mc
-# python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 5 --mu 0 --sigma 5
+python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.1 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh
+python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.1 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh --learnable-mu
 
-# python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 1 --__sigma__ 1 --mu 0 --sigma 1
-# python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 1 --__sigma__ 5 --mu 0 --sigma 5
+python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.5 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh
+python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.5 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh --learnable-mu
+
+# python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.1 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh
+# python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.1 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh

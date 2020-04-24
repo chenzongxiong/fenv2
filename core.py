@@ -1746,7 +1746,7 @@ class MyModel(Layer):
                 # updates += self.update_inputs
             training_inputs = self.feed_inputs + self.feed_targets
 
-            import ipdb; ipdb.set_trace()
+            # import ipdb; ipdb.set_trace()
             # self.updates = updates
             # self.training_inputs = training_inputs
             if kwargs.get('test_stateful', False):
@@ -1860,7 +1860,7 @@ class MyModel(Layer):
             else:
                 LOG.debug(logger_string_epoch.format(i, float(cost), float(mse_cost1), float(mse_cost2), float(diff_res.mean()), float(diff_res.std()), float(__mu__), float(__sigma__), float(loss_by_hand), float(loss_by_tf), loss_a, loss_b))
 
-            LOG.debug("Play States: {}".format(operator_outputs))
+            # LOG.debug("Play States: {}".format(operator_outputs))
             LOG.debug("================================================================================")
             # save weights every 1000 epochs
             # if i % 1000 == 0 and i != 0:

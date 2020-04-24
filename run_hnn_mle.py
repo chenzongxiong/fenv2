@@ -514,6 +514,15 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", dest="batch_size",
                         default=1000,
                         type=int)
+    parser.add_argument("--nb_plays", dest="nb_plays",
+                        default=-1,
+                        type=int)
+    parser.add_argument("--units", dest="units",
+                        default=-1,
+                        type=int)
+    parser.add_argument("--activation", dest="activation",
+                        default=None,
+                        type=str)
     parser.add_argument("--__nb_plays__", dest="__nb_plays__",
                         default=2,
                         type=int)
@@ -523,7 +532,6 @@ if __name__ == "__main__":
     parser.add_argument("--__activation__", dest="__activation__",
                         default=None,
                         type=str)
-
     parser.add_argument('--trend', dest='trend',
                         default=False, action='store_true')
     parser.add_argument('--predict', dest='predict',
@@ -590,16 +598,21 @@ if __name__ == "__main__":
     # sigma = 110
     mu = argv.mu
     sigma = argv.sigma
+    if sigma == int(sigma):
+        sigma = int(sigma)
+    if mu == int(mu):
+        mu = int(mu)
 
     points = 1000
     input_dim = 1
     ############################## ground truth #############################
-    nb_plays = 20
+    nb_plays = argv.nb_plays
     # units is 10000 special for dataset comes from simulation
-    units = 20
+    units = argv.units
     state = 0
-    activation = 'tanh'
-    activation = None
+    # activation = 'tanh'
+    # activation = None
+    activation = argv.activation
     ############################## predicitons #############################
     __nb_plays__ = argv.__nb_plays__
     __units__ = argv.__units__
@@ -614,8 +627,8 @@ if __name__ == "__main__":
     # __mu__ = 2.60
     __mu__ = 0
     __sigma__ = 1
-    # __mu__ = argv.__mu__
-    # __sigma__ = argv.__sigma__
+    __mu__ = argv.__mu__
+    __sigma__ = argv.__sigma__
 
     if method == 'noise':
         with_noise = True
@@ -640,8 +653,8 @@ if __name__ == "__main__":
         # predictions_file_key = 'models_predictions'
         raise
 
-    weights_file_key = 'models_diff_weights_mc_stock_model_saved_weights'
-
+    # weights_file_key = 'models_diff_weights_mc_stock_model_saved_weights'
+    weights_file_key = 'models_diff_weights_saved_weights'
     # XXXX: place weights_fname before run_test
     weights_fname = constants.DATASET_PATH[weights_file_key].format(method=method,
                                                                     activation=activation,
@@ -687,9 +700,13 @@ if __name__ == "__main__":
             predictions_file_key = 'models_diff_weights_mc_stock_model_trends'
             trends_list_file_key = 'models_diff_weights_mc_stock_model_trends_list'
     else:
-        input_file_key = 'models_diff_weights_mc'
-        loss_file_key = 'models_diff_weights_mc_loss_history'
-        predictions_file_key = 'models_diff_weights_mc_predictions'
+        # input_file_key = 'models_diff_weights_mc'
+        # loss_file_key = 'models_diff_weights_mc_loss_history'
+        # predictions_file_key = 'models_diff_weights_mc_predictions'
+
+        input_file_key = 'models_diff_weights'
+        loss_file_key = 'models_diff_weights_loss_history'
+        predictions_file_key = 'models_diff_weights_predictions'
 
 
     fname = constants.DATASET_PATH[input_file_key].format(interp=interp,
