@@ -265,6 +265,7 @@ if __name__ == "__main__":
     LOG.debug(colors.cyan("learning rate: {}".format(learning_rate)))
     LOG.debug(colors.cyan("points: {}".format(points)))
     LOG.debug(colors.cyan("method: {}".format(method)))
+    LOG.debug(colors.cyan("epochs: {}".format(epochs)))
     LOG.debug(colors.cyan("force_train: {}".format(force_train)))
     LOG.debug("==============================================")
 

@@ -10,7 +10,7 @@
 #SBATCH --partition=big
 #SBATCH --mail-type=end
 #SBATCH --mail-user=czxczf@gmail.com
-#SBATCH --array=0-119
+#SBATCH --array=40-59
 
 __nb_plays__=(10 25 25 50 50 100)
 __units__=(10 10 25 25 50 50)
@@ -18,9 +18,9 @@ __units__=(10 10 25 25 50 50)
 __nb_plays__array=()
 __units__array=()
 ensemble_array=()
-for i in {1..20}
+for j in {0..5}
 do
-    for j in {0..5}
+    for i in {1..20}
     do
         __nb_plays__array+=(${__nb_plays__[j]})
         __units__array+=(${__units__[j]})
