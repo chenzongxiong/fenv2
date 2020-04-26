@@ -110,14 +110,19 @@ if __name__ == "__main__":
     lr = 0.05
     epochs = 10000
     NUM_ROWS_TO_READ = 500
-    ensemble_LIST = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    ensemble_LIST = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
     overview = []
     split_ratio = 0.6
+
+
     if argv.markov_chain:
         excel_fname = './new-dataset/models/diff_weights/method-sin/hnn-mc-mle-sigma-{}.xlsx'.format(sigma)
     elif argv.diff_weights:
-        excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}.xlsx'.format(method, sigma)
+        # excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}.xlsx'.format(method, sigma)
+        __nb_plays__ = 25
+        __units__ = 10
+        excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}-nb_plays#-{}-units#-{}.xlsx'.format(method, sigma, __nb_plays__, __units__)
     else:
         excel_fname = './new-dataset/models/method-{}/hnn-all-sigma-{}.xlsx'.format(method, sigma)
 
@@ -153,11 +158,11 @@ if __name__ == "__main__":
         diff_frame = diff_frame.assign(outputs=(_base_output[1:] - _base_output[:-1] - _base_mu) / _base_sigma)
 
         for __activation__ in __activation__LIST:
-            for (__nb_plays__, __units__) in zip(__nb_plays__LIST[idx], __units__LIST[idx]):
-                ensemble = 1
-            # for ensemble in ensemble_LIST:
-                # __nb_plays__ = 100
-                # __units__ = 100
+            # for (__nb_plays__, __units__) in zip(__nb_plays__LIST[idx], __units__LIST[idx]):
+            #     ensemble = 1
+            for ensemble in ensemble_LIST:
+                __nb_plays__ = 25
+                __units__ = 25
 
                 if argv.markov_chain:
 
@@ -209,11 +214,12 @@ if __name__ == "__main__":
                                                                                                         input_dim=input_dim,
                                                                                                         __activation__=__activation__,
                                                                                                         __state__=0,
+                                                                                                        ensemble=ensemble,
                                                                                                         __units__=__units__,
                                                                                                         __nb_plays__=__nb_plays__,
                                                                                                         loss='mse')
                     loss_file_fname = constants.DATASET_PATH['models_diff_weights_loss_history'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
-                                                                                                        __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse')
+                                                                                                        __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse', ensemble=ensemble)
                 else:
                     prediction_fname = constants.DATASET_PATH['models_predictions'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
                                                                                            __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse')
