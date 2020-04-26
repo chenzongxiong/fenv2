@@ -95,11 +95,14 @@ if __name__ == "__main__":
     if argv.markov_chain:
         excel_fname = './new-dataset/lstm/diff_weights/method-sin/lstm-mc-mle-sigma-{}-__activation__-{}.xlsx'.format(sigma, __activation__)
     elif argv.diff_weights:
-        excel_fname = './new-dataset/lstm/diff_weights/method-{}/lstm-all-sigma-{}.xlsx'.format(method, sigma)
+        __units__ = 128
+        excel_fname = './new-dataset/lstm/diff_weights/method-{}/lstm-all-sigma-{}-units-{}.xlsx'.format(method, sigma, __units__)
     else:
         excel_fname = './new-dataset/lstm/method-sin/lstm-all-sigma-{}.xlsx'.format(sigma)
 
     writer = pd.ExcelWriter(excel_fname, engine='xlsxwriter')
+
+    ensemble_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
     for nb_plays in nb_plays_LIST:
         lossframe = pd.DataFrame({})
@@ -136,15 +139,19 @@ if __name__ == "__main__":
         normalizedframe = base.copy(deep=False)
         diff_frame = diff_frame.assign(outputs=(_base_output[1:] - _base_output[:-1] - _base_mu) / _base_sigma)
 
-        for __units__ in __units__LIST:
+        __units__ = 128
+        for ensemble in ensemble_LIST:
+        # for __units__ in __units__LIST:
+            # ensemble = 1
+
             if argv.markov_chain:
                 prediction_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mle', __activation__=__activation__)
                 loss_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mle', __activation__=__activation__)
                 loss_file_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_loss_file'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, learning_rate=lr, loss='mle', __activation__=__activation__)
             elif argv.diff_weights:
-                prediction_fname = constants.DATASET_PATH['lstm_diff_weights_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mse')
-                loss_fname = constants.DATASET_PATH['lstm_diff_weights_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mse')
-                loss_file_fname = constants.DATASET_PATH['lstm_diff_weights_loss_file'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, learning_rate=lr, loss='mse')
+                prediction_fname = constants.DATASET_PATH['lstm_diff_weights_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mse', ensemble=ensemble)
+                loss_fname = constants.DATASET_PATH['lstm_diff_weights_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss='mse', ensemble=ensemble)
+                loss_file_fname = constants.DATASET_PATH['lstm_diff_weights_loss_file'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, learning_rate=lr, loss='mse', ensemble=ensemble)
             else:
                 prediction_fname = constants.DATASET_PATH['lstm_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__)
                 loss_fname = constants.DATASET_PATH['lstm_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__)
@@ -154,14 +161,14 @@ if __name__ == "__main__":
             LOG.debug(colors.cyan("predict file: {}".format(prediction_fname)))
             LOG.debug(colors.cyan("loss file: {}".format(loss_file_fname)))
 
-            predict_column = 'nb_plays-{}-units-{}-predictions'.format(nb_plays, __units__)
+            predict_column = 'nb_plays-{}-units-{}-ensemble-{}-predictions'.format(nb_plays, __units__, ensemble)
             prediction = pd.read_csv(prediction_fname, header=None, names=['inputs', predict_column])
             loss_list = pd.read_csv(loss_file_fname, header=None, names=['loss'])
 
 
             kwargs = {predict_column: prediction[predict_column]}
             dataframe = dataframe.assign(**kwargs)
-            kwargs = {"nb_plays-{}-units-{}-loss".format(nb_plays, __units__): loss_list['loss']}
+            kwargs = {"nb_plays-{}-units-{}-ensemble-{}-loss".format(nb_plays, __units__, ensemble): loss_list['loss']}
             lossframe = lossframe.assign(**kwargs)
 
             with open(loss_fname) as f:
@@ -178,7 +185,7 @@ if __name__ == "__main__":
             diff_rmse = ((_predict_diff - _base_diff) ** 2).mean() ** 0.5
             overview.append([nb_plays, __units__, lr, epochs, rmse, loss['diff_tick'], number_of_parameters, _base_mu, _predict_mu, _base_sigma, _predict_sigma, diff_rmse, loss_list['loss'].values[-1]])
 
-            normalized_column = 'nb_plays-{}-units-{}-predictions'.format(nb_plays, __units__)
+            normalized_column = 'nb_plays-{}-units-{}-ensemble-{}-predictions'.format(nb_plays, __units__, ensemble)
             if _predict_mu * _base_mu >= 0:
                 normalized_data = prediction[predict_column].values
             else:
@@ -186,7 +193,7 @@ if __name__ == "__main__":
 
             kwargs = {normalized_column:  normalized_data}
             normalizedframe = normalizedframe.assign(**kwargs)
-            kwargs = {'nb_plays-{}-units-{}-diff'.format(nb_plays, __units__): (_predict_output[1:] - _predict_output[:-1] - _predict_mu) / _predict_sigma}
+            kwargs = {'nb_plays-{}-units-{}-ensemble-{}-diff'.format(nb_plays, __units__, ensemble): (_predict_output[1:] - _predict_output[:-1] - _predict_mu) / _predict_sigma}
             diff_frame = diff_frame.assign(**kwargs)
 
         dataframe.to_excel(writer, sheet_name="nb_plays-{}-units-{}-pred".format(nb_plays, '1-256', index=False))

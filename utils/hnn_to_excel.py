@@ -110,7 +110,7 @@ if __name__ == "__main__":
     lr = 0.05
     epochs = 10000
     NUM_ROWS_TO_READ = 500
-    ensemble_LIST = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    ensemble_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
     overview = []
     split_ratio = 0.6
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     elif argv.diff_weights:
         # excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}.xlsx'.format(method, sigma)
         __nb_plays__ = 25
-        __units__ = 10
+        __units__ = 25
         excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}-nb_plays#-{}-units#-{}.xlsx'.format(method, sigma, __nb_plays__, __units__)
     else:
         excel_fname = './new-dataset/models/method-{}/hnn-all-sigma-{}.xlsx'.format(method, sigma)
