@@ -47,6 +47,25 @@ if __name__ == "__main__":
     parser.add_argument('--diff-weights', dest='diff_weights',
                         required=False,
                         action="store_true")
+
+    parser.add_argument('--ensemble', dest='ensemble',
+                        required=False,
+                        type=int,
+                        default=1)
+    parser.add_argument('--method', dest='method',
+                        required=False,
+                        type=str,
+                        default='sin')
+    # parser.add_argument('--__units__', dest='__units__',
+    #                     required=False,
+    #                     type=int,
+    #                     default=0)
+
+    parser.add_argument('--seq', dest='seq',
+                        required=False,
+                        type=int,
+                        default=0)
+
     parser.add_argument('--markov-chain', dest='mc',
                         required=False,
                         action="store_true")
@@ -64,6 +83,11 @@ if __name__ == "__main__":
     units = argv.units
     __units__ = argv.__units__
     __activation__ = argv.__activation__
+
+    ensemble = argv.ensemble
+    method = argv.method
+    __units__ = argv.__units__
+    seq = argv.seq
 
     if markov_chain is True:
         # tmp/lstm-mle-lr-0.005-activation-None-nb_plays-20-units-1-points-1000-mu-0-sigma-110-__activation__-tanh-__units__-256.log
@@ -107,87 +131,88 @@ if __name__ == "__main__":
         #     points=points
         # )
         ################################################################################
-        method = 'debug-dima'
+        # method = 'debug-dima'
         activation = None
         mu = 0
         sigma = 0
         nb_plays = 50
         units = 50
         points = 1000
-        __units__ = 1
+        # __units__ = 1
         lr = 0.001
-        seq = 0
-        ################################################################################
-        # method = 'debug-pavel'
-        method = 'debug-dima'
-        activation = None
-        mu = 0
-        sigma = 0
-        nb_plays = 50
-        units = 50
-        points = 1000
-        __units__ = 8
-        lr = 0.001
-        seq = 1
-        ################################################################################
-        method = 'debug-dima'
-        activation = None
-        mu = 0
-        sigma = 0
-        nb_plays = 50
-        units = 50
-        points = 1000
-        __units__ = 16
-        lr = 0.001
-        seq = 2
-        ################################################################################
-        method = 'debug-dima'
-        activation = None
-        mu = 0
-        sigma = 0
-        nb_plays = 50
-        units = 50
-        points = 1000
-        __units__ = 32
-        lr = 0.001
-        seq = 3
+        # seq = 0
+        # ################################################################################
+        # # method = 'debug-pavel'
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 8
+        # lr = 0.001
+        # seq = 1
+        # ################################################################################
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 16
+        # lr = 0.001
+        # seq = 2
+        # ################################################################################
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 32
+        # lr = 0.001
+        # seq = 3
 
-        ################################################################################
-        method = 'debug-dima'
-        activation = None
-        mu = 0
-        sigma = 0
-        nb_plays = 50
-        units = 50
-        points = 1000
-        __units__ = 64
-        lr = 0.001
-        seq = 4
-        ################################################################################
-        method = 'debug-dima'
-        activation = None
-        mu = 0
-        sigma = 0
-        nb_plays = 50
-        units = 50
-        points = 1000
-        __units__ = 128
-        lr = 0.001
-        seq = 5
-        ################################################################################
-        method = 'debug-dima'
-        activation = None
-        mu = 0
-        sigma = 0
-        nb_plays = 50
-        units = 50
-        points = 1000
-        __units__ = 256
-        lr = 0.001
-        seq = 6
+        # ################################################################################
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 64
+        # lr = 0.001
+        # seq = 4
+        # ################################################################################
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 128
+        # lr = 0.001
+        # seq = 5
+        # ################################################################################
+        # method = 'debug-dima'
+        # activation = None
+        # mu = 0
+        # sigma = 0
+        # nb_plays = 50
+        # units = 50
+        # points = 1000
+        # __units__ = 256
+        # lr = 0.001
+        # seq = 6
 
+        # ensemble=1
 
-        fname="./tmp/run-lstm-pavel-dima-sequence-{}.log".format(seq)
+        fname="./tmp/run-lstm-dima-sequence-multiple-times-{}.log".format(seq)
 
         log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/loss-mse/history-lr-{lr}.csv".format(
             method=method,
@@ -200,7 +225,8 @@ if __name__ == "__main__":
             nb_plays=nb_plays,
             points=points,
             __units__=__units__,
-            lr=lr
+            lr=lr,
+            ensemble=ensemble
             )
     else:
         fname="./tmp/lstm-activation-{activation}-lr-{lr}-mu-{mu}-sigma-{sigma}-nb_play-{nb_plays}-units-{units}-__units__-{__units__}-points-{points}.log".format(
