@@ -212,9 +212,10 @@ if __name__ == "__main__":
 
         # ensemble=1
 
-        fname="./tmp/run-lstm-dima-sequence-multiple-times-{}.log".format(seq)
+        fname="./tmp/run-lstm-dima-sequence-multiple-times-__units__-16-{}.log".format(seq)
+        # ./tmp/run-lstm-dima-sequence-multiple-times-__units__-16-%a.log
 
-        log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/loss-mse/history-lr-{lr}.csv".format(
+        log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-mse/history-lr-{lr}.csv".format(
             method=method,
             activation=activation,
             state=0,
