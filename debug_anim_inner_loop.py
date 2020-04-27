@@ -79,7 +79,7 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
 
 
     # inputs, predictions = tdata.DatasetLoader.load_data(prediction_fname)
-    import ipdb; ipdb.set_trace()
+
     _inputs, _outputs = tdata.DatasetLoader.load_data(input_fname)
     # outputs = _outputs[:, -1]
     outputs = _outputs
@@ -129,7 +129,7 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
     loss = 'mse'
     model.compile(loss=loss, optimizer=optimizer, metrics=[loss])
     model.summary()
-    weights_fname = constants.DATASET_PATH['lstm_diff_weights_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss)
+    weights_fname = constants.DATASET_PATH['lstm_diff_weights_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, ensemble=ensemble)
     model.load_weights(weights_fname)
 
     test_inputs = _inputs_interp.reshape(-1, 1, 1)
@@ -173,8 +173,10 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
     inputs = _inputs_interp[start_pos:end_pos]
     outputs_interp = ground_truth_interp[start_pos:end_pos]
 
-    inputs = np.vstack([inputs, inputs]).T
     outputs = np.vstack([outputs_interp, pred_outputs_interp]).T
+    tdata.DatasetSaver.save_data(inputs, outputs, './debug-pavel-__units__-{}.csv'.format(__units__))
+
+    inputs = np.vstack([inputs, inputs]).T
     colors = utils.generate_colors(outputs.shape[-1])
     fname = './debug.gif'
     utils.save_animation(inputs, outputs, fname, step=40, colors=colors, mode='snake')
