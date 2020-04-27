@@ -65,7 +65,8 @@ def predict(inputs,
             activation='tanh',
             nb_plays=1,
             weights_name='model.h5',
-            ensemble=1):
+            ensemble=1,
+            __state__=0):
 
     with open("{}/{}plays/input_shape.txt".format(weights_name[:-3], nb_plays), 'r') as f:
         line = f.read()
@@ -94,7 +95,13 @@ def predict(inputs,
 
     mymodel.load_weights(weights_fname)
     op_outputs = mymodel.get_op_outputs_parallel(inputs[0])
-    states_list = [o[-1] for o in op_outputs]
+    # NOTE: correct states
+    if __state__ == 0:
+        states_list = [o[-1] for o in op_outputs]
+    # NOTE: enforce state to be error
+    else:
+        states_list = [__state__ for o in op_outputs]
+    # states_list = [0 for o in op_outputs]
     predictions = mymodel.predict_parallel(inputs[1], states_list=states_list)
 
     end = time.time()
@@ -159,6 +166,11 @@ if __name__ == "__main__":
                         required=False,
                         type=int,
                         default=1)
+    parser.add_argument('--__state__', dest='__state__',
+                        required=False,
+                        type=int,
+                        default=0)
+
 
     argv = parser.parse_args(sys.argv[1:])
 
@@ -171,7 +183,7 @@ if __name__ == "__main__":
 
     input_dim = 1
     state = 0
-    __state__ = 0
+    __state__ = argv.__state__
     ############################## Misc #############################
     mu = int(argv.mu)
     sigma = int(argv.sigma)
@@ -272,16 +284,16 @@ if __name__ == "__main__":
     train_inputs, train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
     test_inputs, test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
 
-    fit(inputs=train_inputs,
-        outputs=train_outputs,
-        units=__units__,
-        activation=__activation__,
-        nb_plays=__nb_plays__,
-        learning_rate=learning_rate,
-        loss_file_name=loss_history_fname,
-        weights_name=weights_fname,
-        epochs=epochs,
-        ensemble=ensemble)
+    # fit(inputs=train_inputs,
+    #     outputs=train_outputs,
+    #     units=__units__,
+    #     activation=__activation__,
+    #     nb_plays=__nb_plays__,
+    #     learning_rate=learning_rate,
+    #     loss_file_name=loss_history_fname,
+    #     weights_name=weights_fname,
+    #     epochs=epochs,
+    #     ensemble=ensemble)
 
     test_inputs, predictions = predict(inputs=[train_inputs, test_inputs],
                                        outputs=[train_outputs, test_outputs],
@@ -289,7 +301,8 @@ if __name__ == "__main__":
                                        activation=__activation__,
                                        nb_plays=__nb_plays__,
                                        weights_name=weights_fname,
-                                       ensemble=ensemble)
+                                       ensemble=ensemble,
+                                       __state__=__state__)
 
     tdata.DatasetSaver.save_data(test_inputs, predictions, predict_fname)
     LOG.debug("==================FINISHED=================================================")
