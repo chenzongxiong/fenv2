@@ -10,7 +10,7 @@
 #SBATCH --partition=big
 #SBATCH --mail-type=end
 #SBATCH --mail-user=czxczf@gmail.com
-#SBATCH --array=40-59
+#SBATCH --array=0-19
 
 __nb_plays__=(10 25 25 50 50 100)
 __units__=(10 10 25 25 50 50)

@@ -9,7 +9,7 @@
 #SBATCH --partition=big
 #SBATCH --mail-type=end
 #SBATCH --mail-user=czxczf@gmail.com
-#SBATCH --array=0
+#SBATCH --array=1-19
 
 
 # python prove_hnn_mse_invertable.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train

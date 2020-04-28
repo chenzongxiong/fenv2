@@ -55,7 +55,7 @@ function run {
     echo "RUN MLE with known mu and sigma, __sigma__: ${__sigma__}, sigma: ${sigma}, __nb_plays__: ${__nb_plays__}, __units__: ${__units__}, ensemble: ${ensemble}, hostname: ${host_name}"
 
     source /home/zxchen/.venv3/bin/activate
-    python run_hnn_mle.py --__nb_plays__ ${__nb_plays__} --__units__ ${__units__} --__activation__ elu --batch_size 1000 --ensemble ${ensemble} --force-train --__mu__ 0 --__sigma__ ${__sigma__} --mu 0 --sigma ${sigma} --method mc --nb_plays 50 --units 50 --activation tanh
+    # python run_hnn_mle.py --__nb_plays__ ${__nb_plays__} --__units__ ${__units__} --__activation__ elu --batch_size 1000 --ensemble ${ensemble} --force-train --__mu__ 0 --__sigma__ ${__sigma__} --mu 0 --sigma ${sigma} --method mc --nb_plays 50 --units 50 --activation tanh
 }
 
 # __sigma__=0.1
@@ -65,7 +65,7 @@ function run {
 # ensemble=1
 
 
-run ${__sigma__array[SLURM_TASK_ID]} ${__nb_plays__array[SLURM_TASK_ID]} ${__units__array[SLURM_TASK_ID]} ${sigma_array[SLURM_TASK_ID]} ${ensemble_array[SLURM_TASK_ID]}
+run ${__sigma__array[SLURM_ARRAY_TASK_ID]} ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${sigma_array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}
 
 # python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.1 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh --learnable-mu
 

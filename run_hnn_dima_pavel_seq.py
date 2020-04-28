@@ -284,16 +284,16 @@ if __name__ == "__main__":
     train_inputs, train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
     test_inputs, test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
 
-    # fit(inputs=train_inputs,
-    #     outputs=train_outputs,
-    #     units=__units__,
-    #     activation=__activation__,
-    #     nb_plays=__nb_plays__,
-    #     learning_rate=learning_rate,
-    #     loss_file_name=loss_history_fname,
-    #     weights_name=weights_fname,
-    #     epochs=epochs,
-    #     ensemble=ensemble)
+    fit(inputs=train_inputs,
+        outputs=train_outputs,
+        units=__units__,
+        activation=__activation__,
+        nb_plays=__nb_plays__,
+        learning_rate=learning_rate,
+        loss_file_name=loss_history_fname,
+        weights_name=weights_fname,
+        epochs=epochs,
+        ensemble=ensemble)
 
     test_inputs, predictions = predict(inputs=[train_inputs, test_inputs],
                                        outputs=[train_outputs, test_outputs],
