@@ -183,7 +183,8 @@ if __name__ == "__main__":
 
     input_dim = 1
     state = 0
-    __state__ = argv.__state__
+    debug_state = argv.__state__
+    __state__ = 0
     ############################## Misc #############################
     mu = int(argv.mu)
     sigma = int(argv.sigma)
@@ -244,7 +245,7 @@ if __name__ == "__main__":
                                                                     points=points,
                                                                     input_dim=input_dim,
                                                                     __activation__=__activation__,
-                                                                    __state__=__state__,
+                                                                    __state__=debug_state,
                                                                     __units__=__units__,
                                                                     __nb_plays__=__nb_plays__,
                                                                     ensemble=ensemble,
@@ -284,16 +285,16 @@ if __name__ == "__main__":
     train_inputs, train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
     test_inputs, test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
 
-    fit(inputs=train_inputs,
-        outputs=train_outputs,
-        units=__units__,
-        activation=__activation__,
-        nb_plays=__nb_plays__,
-        learning_rate=learning_rate,
-        loss_file_name=loss_history_fname,
-        weights_name=weights_fname,
-        epochs=epochs,
-        ensemble=ensemble)
+    # fit(inputs=train_inputs,
+    #     outputs=train_outputs,
+    #     units=__units__,
+    #     activation=__activation__,
+    #     nb_plays=__nb_plays__,
+    #     learning_rate=learning_rate,
+    #     loss_file_name=loss_history_fname,
+    #     weights_name=weights_fname,
+    #     epochs=epochs,
+    #     ensemble=ensemble)
 
     test_inputs, predictions = predict(inputs=[train_inputs, test_inputs],
                                        outputs=[train_outputs, test_outputs],
@@ -302,7 +303,7 @@ if __name__ == "__main__":
                                        nb_plays=__nb_plays__,
                                        weights_name=weights_fname,
                                        ensemble=ensemble,
-                                       __state__=__state__)
+                                       __state__=debug_state)
 
     tdata.DatasetSaver.save_data(test_inputs, predictions, predict_fname)
     LOG.debug("==================FINISHED=================================================")

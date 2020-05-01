@@ -18,7 +18,7 @@ __units__=(10 10 25 25 50 50)
 __nb_plays__array=()
 __units__array=()
 ensemble_array=()
-for j in {0..5}
+for j in {0..6}
 do
     for i in {1..20}
     do
@@ -37,9 +37,9 @@ function run_pavel {
     ensemble=$3
     __state__=$4
     host_name=`hostname`
-    echo "Run pavel with __nb_plays__=${__nb_plays__}, __units__=${__units__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}, ensemble ${ensemble}"
+    echo "Run pavel with __nb_plays__=${__nb_plays__}, __units__=${__units__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}, ensemble ${ensemble}, __state__: ${__state__}"
     source $HOME/.venv3/bin/activate
-    python run_hnn_dima_pavel_seq.py --epochs 1000  --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --method debug-pavel --__nb_plays__ ${__nb_plays__} --__units__ ${__units__} --__activation__ elu --force_train --diff-weights --ensemble ${ensemble} --__state__ ${__state__}
+    python run_hnn_dima_pavel_seq.py --epochs 1000  --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --method debug-pavel --__nb_plays__ ${__nb_plays__} --__units__ ${__units__} --__activation__ elu --diff-weights --ensemble ${ensemble} --__state__ ${__state__}
 }
 
 # function run_dima {
@@ -53,6 +53,25 @@ function run_pavel {
 # }
 
 # run_pavel ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]} 1
-run_pavel 25 25 1 1
+# run_pavel 25 25 1 1
 
 # run_dima ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}
+for SLURM_ARRAY_TASK_ID in {40..60}
+do
+    run_pavel ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]} 1
+done
+
+for SLURM_ARRAY_TASK_ID in {40..60}
+do
+    run_pavel ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]} -1
+done
+
+for SLURM_ARRAY_TASK_ID in {40..60}
+do
+    run_pavel ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]} 100
+done
+
+for SLURM_ARRAY_TASK_ID in {40..60}
+do
+    run_pavel ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]} -100
+done
