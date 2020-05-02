@@ -122,8 +122,7 @@ if __name__ == "__main__":
         # excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}.xlsx'.format(method, sigma)
         __nb_plays__ = 25
         __units__ = 25
-        __state__ = 1
-        excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}-nb_plays#-{}-units#-{}-__state__-{}.xlsx'.format(method, sigma, __nb_plays__, __units__, __state__)
+        excel_fname = './new-dataset/models/diff_weights/method-{}/inverse_hnn-mse-sigma-{}-nb_plays#-{}-units#-{}.xlsx'.format(method, sigma, __nb_plays__, __units__)
     else:
         excel_fname = './new-dataset/models/method-{}/hnn-all-sigma-{}.xlsx'.format(method, sigma)
 
@@ -137,20 +136,28 @@ if __name__ == "__main__":
         if nb_plays == 500:
             units = 100
 
-        if argv.markov_chain:
-            input_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=10000, nb_plays=nb_plays, points=1000, input_dim=input_dim, loss='mle')
-            base = pd.read_csv(input_fname, header=None, names=['inputs', 'outputs'], skiprows=1500, nrows=NUM_ROWS_TO_READ)
-        elif argv.diff_weights:
+        # if argv.markov_chain:
+        #     input_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=10000, nb_plays=nb_plays, points=1000, input_dim=input_dim, loss='mle')
+        #     base = pd.read_csv(input_fname, header=None, names=['inputs', 'outputs'], skiprows=1500, nrows=NUM_ROWS_TO_READ)
+        # elif argv.diff_weights:
+        if argv.diff_weights:
             input_fname = constants.DATASET_PATH['models_diff_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim)
             base = pd.read_csv(input_fname, header=None, names=['inputs', 'outputs'], skiprows=int(0.6*points))
-        else:
-            input_fname = constants.DATASET_PATH['models'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim)
+        # else:
+        #     input_fname = constants.DATASET_PATH['models'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim)
 
             base = pd.read_csv(input_fname, header=None, names=['inputs', 'outputs'], skiprows=int(0.6*points))
+            # base['inputs'], base['outputs'] = base['outputs'], base['inputs']
+            # base_outputs = base['outputs']
+            # base_inputs = base['inputs']
+            # import ipdb; ipdb.set_trace()
+            # base['inputs'] = base_outputs
+            # base['outputs'] = base_inputs
+            base = base[['outputs', 'inputs']]
 
         dataframe = base.copy(deep=False)
 
-        _base_output = base['outputs'].values
+        _base_output = base['inputs'].values
         _base_diff = _base_output[1:] - _base_output[:-1]
         _base_mu = _base_diff.mean()
         _base_sigma = _base_diff.std()
@@ -165,67 +172,68 @@ if __name__ == "__main__":
                 __nb_plays__ = 25
                 __units__ = 25
 
-                if argv.markov_chain:
+                # if argv.markov_chain:
 
-                    LOG.debug(colors.cyan("Loading from markov chain..."))
-                    prediction_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model_predictions'].format(method=method,
-                                                                                                                       activation=activation,
-                                                                                                                       state=state,
-                                                                                                                       mu=mu,
-                                                                                                                       sigma=sigma,
-                                                                                                                       units=units,
-                                                                                                                       nb_plays=nb_plays,
-                                                                                                                       points=points,
-                                                                                                                       input_dim=input_dim,
-                                                                                                                       __activation__=__activation__,
-                                                                                                                       __state__=0,
-                                                                                                                       __units__=__units__,
-                                                                                                                       __nb_plays__=__nb_plays__,
-                                                                                                                       ensemble=ensemble,
-                                                                                                                       loss='mle',
-                                                                                                                       batch_size=batch_size)
+                #     LOG.debug(colors.cyan("Loading from markov chain..."))
+                #     prediction_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model_predictions'].format(method=method,
+                #                                                                                                        activation=activation,
+                #                                                                                                        state=state,
+                #                                                                                                        mu=mu,
+                #                                                                                                        sigma=sigma,
+                #                                                                                                        units=units,
+                #                                                                                                        nb_plays=nb_plays,
+                #                                                                                                        points=points,
+                #                                                                                                        input_dim=input_dim,
+                #                                                                                                        __activation__=__activation__,
+                #                                                                                                        __state__=0,
+                #                                                                                                        __units__=__units__,
+                #                                                                                                        __nb_plays__=__nb_plays__,
+                #                                                                                                        ensemble=ensemble,
+                #                                                                                                        loss='mle',
+                #                                                                                                        batch_size=batch_size)
 
-                    loss_file_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model_loss_history'].format(method=method,
-                                                                                                                       activation=activation,
-                                                                                                                       state=state,
-                                                                                                                       mu=mu,
-                                                                                                                       sigma=sigma,
-                                                                                                                       units=units,
-                                                                                                                       nb_plays=nb_plays,
-                                                                                                                       points=points,
-                                                                                                                       input_dim=input_dim,
-                                                                                                                       __activation__=__activation__,
-                                                                                                                       __state__=0,
-                                                                                                                       __units__=__units__,
-                                                                                                                       __nb_plays__=__nb_plays__,
-                                                                                                                       ensemble=ensemble,
-                                                                                                                       loss='mle',
-                                                                                                                       batch_size=batch_size)
+                #     loss_file_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model_loss_history'].format(method=method,
+                #                                                                                                        activation=activation,
+                #                                                                                                        state=state,
+                #                                                                                                        mu=mu,
+                #                                                                                                        sigma=sigma,
+                #                                                                                                        units=units,
+                #                                                                                                        nb_plays=nb_plays,
+                #                                                                                                        points=points,
+                #                                                                                                        input_dim=input_dim,
+                #                                                                                                        __activation__=__activation__,
+                #                                                                                                        __state__=0,
+                #                                                                                                        __units__=__units__,
+                #                                                                                                        __nb_plays__=__nb_plays__,
+                #                                                                                                        ensemble=ensemble,
+                #                                                                                                        loss='mle',
+                #                                                                                                        batch_size=batch_size)
 
-                elif argv.diff_weights:
+                # elif argv.diff_weights:
+                if argv.diff_weights:
                     LOG.debug(colors.cyan("Loading from diff weights..."))
-                    prediction_fname = constants.DATASET_PATH['models_diff_weights_predictions'].format(method=method,
-                                                                                                        activation=activation,
-                                                                                                        state=state,
-                                                                                                        mu=mu,
-                                                                                                        sigma=sigma,
-                                                                                                        units=units,
-                                                                                                        nb_plays=nb_plays,
-                                                                                                        points=points,
-                                                                                                        input_dim=input_dim,
-                                                                                                        __activation__=__activation__,
-                                                                                                        __state__=__state__,
-                                                                                                        ensemble=ensemble,
-                                                                                                        __units__=__units__,
-                                                                                                        __nb_plays__=__nb_plays__,
-                                                                                                        loss='mse')
-                    loss_file_fname = constants.DATASET_PATH['models_diff_weights_loss_history'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
-                                                                                                        __activation__=__activation__, __state__=__state__, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse', ensemble=ensemble)
-                else:
-                    prediction_fname = constants.DATASET_PATH['models_predictions'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
-                                                                                           __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse')
-                    loss_file_fname = constants.DATASET_PATH['models_loss_history'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
-                                                                                           __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse')
+                    prediction_fname = constants.DATASET_PATH['models_diff_weights_invert_predictions'].format(method=method,
+                                                                                                               activation=activation,
+                                                                                                               state=state,
+                                                                                                               mu=mu,
+                                                                                                               sigma=sigma,
+                                                                                                               units=units,
+                                                                                                               nb_plays=nb_plays,
+                                                                                                               points=points,
+                                                                                                               input_dim=input_dim,
+                                                                                                               __activation__=__activation__,
+                                                                                                               __state__=0,
+                                                                                                               ensemble=ensemble,
+                                                                                                               __units__=__units__,
+                                                                                                               __nb_plays__=__nb_plays__,
+                                                                                                               loss='mse')
+                    loss_file_fname = constants.DATASET_PATH['models_diff_weights_invert_loss_history'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
+                                                                                                               __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse', ensemble=ensemble)
+                # else:
+                #     prediction_fname = constants.DATASET_PATH['models_predictions'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
+                #                                                                            __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse')
+                #     loss_file_fname = constants.DATASET_PATH['models_loss_history'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim,
+                #                                                                            __activation__=__activation__, __state__=0, __units__=__units__, __nb_plays__=__nb_plays__, loss='mse')
 
                 LOG.debug(colors.cyan("input file: {}".format(input_fname)))
                 LOG.debug(colors.cyan("predict file: {}".format(prediction_fname)))
@@ -242,7 +250,7 @@ if __name__ == "__main__":
                 kwargs = {"nb_plays-{}-units-{}-__activation__-{}-__nb_plays__-{}-__units__-{}-ensemble-{}-loss".format(nb_plays, units, __activation__, __nb_plays__, __units__, ensemble): loss_list['loss']}
                 lossframe = lossframe.assign(**kwargs)
 
-                loss = ((prediction[predict_column]  - base['outputs']).values ** 2).mean()**0.5
+                loss = ((prediction[predict_column][300:350]  - base['inputs'][300:350]).values ** 2).mean()**0.5
                 number_of_parameters = __nb_plays__ * (2*__units__ + __units__) + 1
 
                 _predict_output = prediction[predict_column].values
