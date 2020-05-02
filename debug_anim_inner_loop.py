@@ -114,58 +114,59 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
     end_pos = 8300
 
     ####### LSTM
-    learning_rate = 0.001
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, amsgrad=False)
-    model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.LSTM(int(__units__),
-                                   input_shape=(1, 1),
-                                   unroll=False,
-                                   return_sequences=True,
-                                   use_bias=True,
-                                   stateful=True,
-                                   batch_size=1,
-                                   implementation=2))
-    model.add(tf.keras.layers.Dense(1))
-    loss = 'mse'
-    model.compile(loss=loss, optimizer=optimizer, metrics=[loss])
-    model.summary()
-    weights_fname = constants.DATASET_PATH['lstm_diff_weights_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, ensemble=ensemble)
-    model.load_weights(weights_fname)
+    # learning_rate = 0.001
+    # optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, amsgrad=False)
+    # model = tf.keras.models.Sequential()
+    # model.add(tf.keras.layers.LSTM(int(__units__),
+    #                                input_shape=(1, 1),
+    #                                unroll=False,
+    #                                return_sequences=True,
+    #                                use_bias=True,
+    #                                stateful=True,
+    #                                batch_size=1,
+    #                                implementation=2))
+    # model.add(tf.keras.layers.Dense(1))
+    # loss = 'mse'
+    # model.compile(loss=loss, optimizer=optimizer, metrics=[loss])
+    # model.summary()
+    # weights_fname = constants.DATASET_PATH['lstm_diff_weights_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, ensemble=ensemble)
+    # model.load_weights(weights_fname)
 
-    test_inputs = _inputs_interp.reshape(-1, 1, 1)
-    predictions_interp = model.predict(test_inputs)
-    pred_outputs_interp = predictions_interp.reshape(-1)
+    # test_inputs = _inputs_interp.reshape(-1, 1, 1)
+    # predictions_interp = model.predict(test_inputs)
+    # pred_outputs_interp = predictions_interp.reshape(-1)
 
-    pred_outputs_interp = pred_outputs_interp[start_pos:end_pos]
+    # pred_outputs_interp = pred_outputs_interp[start_pos:end_pos]
     ############################################################################################################
     # HNN
-    # weights_fname = constants.DATASET_PATH['models_diff_weights_saved_weights'].format(method=method,
-    #                                                                                    activation=activation,
-    #                                                                                    state=state,
-    #                                                                                    mu=mu,
-    #                                                                                    sigma=sigma,
-    #                                                                                    units=units,
-    #                                                                                    nb_plays=nb_plays,
-    #                                                                                    points=points,
-    #                                                                                    input_dim=input_dim,
-    #                                                                                    __activation__=__activation__,
-    #                                                                                    __state__=0,
-    #                                                                                    __units__=__units__,
-    #                                                                                    __nb_plays__=__nb_plays__,
-    #                                                                                    loss='mse')
+    weights_fname = constants.DATASET_PATH['models_diff_weights_saved_weights'].format(method=method,
+                                                                                       activation=activation,
+                                                                                       state=state,
+                                                                                       mu=mu,
+                                                                                       sigma=sigma,
+                                                                                       units=units,
+                                                                                       nb_plays=nb_plays,
+                                                                                       points=points,
+                                                                                       input_dim=input_dim,
+                                                                                       __activation__=__activation__,
+                                                                                       __state__=0,
+                                                                                       __units__=__units__,
+                                                                                       __nb_plays__=__nb_plays__,
+                                                                                       ensemble=ensemble,
+                                                                                       loss='mse')
 
-    # train_inputs = _inputs_interp[:start_pos]
-    # train_outputs = ground_truth_interp[:start_pos]
-    # test_inputs = _inputs_interp[start_pos:end_pos]
-    # test_outputs = ground_truth_interp[start_pos:end_pos]
+    train_inputs = _inputs_interp[:start_pos]
+    train_outputs = ground_truth_interp[:start_pos]
+    test_inputs = _inputs_interp[start_pos:end_pos]
+    test_outputs = ground_truth_interp[start_pos:end_pos]
 
-    # _, pred_outputs_interp = hnn_predict(inputs=[train_inputs, test_inputs],
-    #                                      outputs=[train_outputs, test_outputs],
-    #                                      units=__units__,
-    #                                      activation=__activation__,
-    #                                      nb_plays=__nb_plays__,
-    #                                      weights_name=weights_fname,
-    #                                      ensemble=ensemble)
+    _, pred_outputs_interp = hnn_predict(inputs=[train_inputs, test_inputs],
+                                         outputs=[train_outputs, test_outputs],
+                                         units=__units__,
+                                         activation=__activation__,
+                                         nb_plays=__nb_plays__,
+                                         weights_name=weights_fname,
+                                         ensemble=ensemble)
 
     import ipdb; ipdb.set_trace()
 
@@ -174,7 +175,8 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
     outputs_interp = ground_truth_interp[start_pos:end_pos]
 
     outputs = np.vstack([outputs_interp, pred_outputs_interp]).T
-    tdata.DatasetSaver.save_data(inputs, outputs, './debug-pavel-__units__-{}.csv'.format(__units__))
+    tdata.DatasetSaver.save_data(inputs, outputs, './debug-hnn-pavel-__units__-{}-__nb_plays__-{}-interp.csv'.format(__units__, __nb_plays__))
+    # tdata.DatasetSaver.save_data(inputs, outputs, './debug-lstm-pavel-__units__-{}.csv'.format(__units__))
 
     inputs = np.vstack([inputs, inputs]).T
     colors = utils.generate_colors(outputs.shape[-1])
