@@ -119,7 +119,7 @@ if __name__ == "__main__":
     if True:
         __nb_plays__ = 25
         __units__ = 25
-        __state__ = -1
+        __state__ = 0
         excel_fname = './new-dataset/models/diff_weights/method-{}/hnn-mse-sigma-{}-nb_plays#-{}-units#-{}-__state__-{}.xlsx'.format(method, sigma, __nb_plays__, __units__, __state__)
 
     writer = pd.ExcelWriter(excel_fname, engine='xlsxwriter')
@@ -177,7 +177,7 @@ if __name__ == "__main__":
                 kwargs = {predict_column: prediction[predict_column]}
                 dataframe = dataframe.assign(**kwargs)
 
-                loss = ((prediction[predict_column]  - base['outputs']).values ** 2).mean()**0.5
+                loss = ((prediction[predict_column]  - base['outputs']).values[50:] ** 2).mean()**0.5
                 number_of_parameters = __nb_plays__ * (2*__units__ + __units__) + 1
 
                 _predict_output = prediction[predict_column].values

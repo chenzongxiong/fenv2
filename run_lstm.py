@@ -235,7 +235,7 @@ def lstm_4(input_fname, units, capacity=1, epochs=5000):
 def lstm_5(input_fname, units, capacity=1, epochs=5000):
     # https://www.kaggle.com/pablocastilla/predict-stock-prices-with-lstm
     start = time.time()
-    units = 1500
+    units = 600
     _prices, _ = tdata.DatasetLoader.load_data(input_fname)
 
     prices1 = _prices[:units]
@@ -279,8 +279,8 @@ def lstm_5(input_fname, units, capacity=1, epochs=5000):
               callbacks=[early_stopping_callback], validation_split=0.05,
               shuffle=False)
 
-    pred_inputs = _prices[1500:2000]
-    truth_outputs = _prices[1501:2001]
+    pred_inputs = _prices[units-1:units+400-1]
+    truth_outputs = _prices[units:units+400]
 
     pred_inputs = pred_inputs.reshape(-1, 1, 1)
     predictions = model.predict(pred_inputs)
@@ -301,7 +301,8 @@ def lstm_5(input_fname, units, capacity=1, epochs=5000):
 if __name__ == "__main__":
 
     # input_fname = "new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-10000/nb_plays-20/points-1000/input_dim-1/mu-0-sigma-110-points-1000.csv"
-    input_fname = "new-dataset/models/diff_weights/method-sp/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
+    # input_fname = "new-dataset/models/diff_weights/method-sp/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
+    input_fname = "new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--capacity", dest="capacity",
