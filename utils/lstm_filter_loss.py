@@ -139,7 +139,7 @@ if __name__ == "__main__":
         units = 50
         points = 1000
         # __units__ = 1
-        lr = 0.001
+        lr = 0.01
         # seq = 0
         # ################################################################################
         # # method = 'debug-pavel'
@@ -212,8 +212,8 @@ if __name__ == "__main__":
 
         # ensemble=1
 
-        fname="./tmp/run-lstm-dima-sequence-multiple-times-__units__-16-{}.log".format(seq)
-        # ./tmp/run-lstm-dima-sequence-multiple-times-__units__-16-%a.log
+        # fname="./tmp/run-lstm-dima-sequence-multiple-times-__units__-16-{}.log".format(seq)
+        fname = 'tmp/run-lstm-dima-sequence-multiple-times-epochs-8000-{}.log'.format(seq)
 
         log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-mse/history-lr-{lr}.csv".format(
             method=method,

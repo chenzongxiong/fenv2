@@ -36,7 +36,7 @@ def fit(inputs,
         learnable_mu=False):
 
     # epochs = 20000
-    epochs = 10000
+    epochs = 6000
     # epochs = 10
 
     start = time.time()

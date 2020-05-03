@@ -1,192 +1,47 @@
-########################## NO DIFF WEIGHT, NO NOISE ###################################
-# # # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 1 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 2 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 1 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 2 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 4 --__units__ 2 --__activation__ elu --force_train
+#!/bin/bash
 
-# # # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 10 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train
-
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ elu --force_train &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &
-
-# not run
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-50-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-100-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-200-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-500-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 200 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-500-__units__-500-__activation__-elu-points-1000.log
+#SBATCH -J run-hnn-mse-known-mu-sigma
+#SBATCH -D /home/zxchen/fenv2
+#SBATCH -o ./tmp/run-hnn-mle-known-mu-sigma-%a.log
+#SBATCH --nodes=1
+#SBATCH --constraint "AMD"
+#SBATCH --mem=80G
+#SBATCH --time=2-00:00:00
+#SBATCH --partition=big
+#SBATCH --mail-type=end
+#SBATCH --mail-user=czxczf@gmail.com
+#SBATCH --array=0
 
 
-########################## DIFF WEIGHT, NO WITH NOISE ###################################
-# elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 1 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 2 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 1 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 2 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 4 --__units__ 2 --__activation__ elu --force_train
+__units__=(128 64 32 16 8 1)
+ensemble_array=()
+__units__array=()
 
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 10 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train
+for j in {0..5}
+do
+    for i in {1..20}
+    do
+        __units__array+=(${__units__[j]})
+        ensemble_array+=($i)
+    done
+done
 
-# elu
-python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train
-python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train
-python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train
-python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train
-python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train
-python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ elu --force_train
-python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train
-
-# not run
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-50-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-100-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-200-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 100 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-500-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --diff-weights --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 200 --__activation__ elu --force_train &> log/hnn-diff-weights-activation-tanh-lr-0.05-mu-0-sigma-0-nb_play-500-units-100-__nb_plays__-500-__units__-500-__activation__-elu-points-1000.log
-
-# DOING ############################## NO DIFF WEIGHT, WITH NOISE ###################################
-# # tanh
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 1 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-1-__units__-1-__activation__-tanh-points-1000.log &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 2 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-1-__units__-2-__activation__-tanh-points-1000.log &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 1 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-2-__units__-1-__activation__-tanh-points-1000.log &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 2 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-2-__units__-2-__activation__-tanh-points-1000.log &
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 4 --__units__ 2 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-4-__units__-2-__activation__-tanh-points-1000.log &
-
-# # tanh
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-10-__units__-10-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 10 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-25-__units__-10-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-25-__units__-25-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-50-__units__-50-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-100-__units__-50-__activation__-tanh-points-1000.log
-
-# # tanh
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-25-__units__-25-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-50-__units__-25-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-50-__units__-50-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-100-__units__-50-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-100-__units__-100-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-200-__units__-25-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-200-__units__-100-__activation__-tanh-points-1000.log
-
-# # tanh
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-25-__units__-25-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-50-__units__-25-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-50-__units__-50-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-100-__units__-50-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-100-__units__-100-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-200-__units__-100-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-500-__units__-100-__activation__-tanh-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 200 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-500-__units__-500-__activation__-tanh-points-1000.log
+echo ${__units__array[*]}
+echo ${ensemble_array[*]}
 
 
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 1 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-1-__units__-1-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 1 --__units__ 2 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-1-__units__-2-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 1 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-2-__units__-1-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 2 --__units__ 2 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-2-__units__-2-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 1 --units 1 --__nb_plays__ 4 --__units__ 2 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-1-units-1-__nb_plays__-4-__units__-2-__activation__-elu-points-1000.log
+function run {
+    __sigma__=$1
+    __nb_plays__=$2
+    __units__=$3
+    sigma=$4
+    ensemble=$5
+    host_name=`hostname`
 
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-10-__units__-10-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 10 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-25-__units__-10-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-50-units-50-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
+    echo "RUN MSE with known mu and sigma, __sigma__: ${__sigma__}, sigma: ${sigma}, __nb_plays__: ${__nb_plays__}, __units__: ${__units__}, ensemble: ${ensemble}, hostname: ${host_name}"
 
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-50-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-100-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-200-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-100-units-100-__nb_plays__-200-__units__-100-__activation__-elu-points-1000.log
+    source /home/zxchen/.venv3/bin/activate
+    # python run_hnn_mse.py --epochs 1000  --mu 0 --sigma 0 --lr 0.05 --points 1000 --nb_plays 50 --units 50 --method debug-mc --__nb_plays__ ${__nb_plays__} --__units__ ${__units__} --__activation__ elu --force_train --diff-weights --ensemble ${ensemble}
+}
 
-# # elu
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-50-__units__-25-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-100-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-200-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-500-__units__-100-__activation__-elu-points-1000.log
-# python run_hnn_mse.py --epochs 1000 --activation tanh --mu 0 --sigma 2 --lr 0.05 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 200 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.05-mu-0-sigma-2-nb_play-500-units-100-__nb_plays__-500-__units__-500-__activation__-elu-points-1000.log
-
-
-# DONE ########################## DIFF WEIGHT, WITH NOISE ###################################
-# # tanh
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-10-__units__-10-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 10 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-25-__units__-10-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-25-__units__-25-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-50-__units__-50-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-100-__units__-50-__activation__-tanh-points-1000.log
-
-# # tanh
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-25-__units__-25-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-50-__units__-25-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-50-__units__-50-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-100-__units__-50-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-100-__units__-100-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-200-__units__-25-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-200-__units__-100-__activation__-tanh-points-1000.log
-
-# # tanh
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-25-__units__-25-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-50-__units__-25-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-50-__units__-50-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-100-__units__-50-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-100-__units__-100-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-200-__units__-100-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 100 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-500-__units__-100-__activation__-tanh-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 200 --__activation__ tanh --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-500-__units__-500-__activation__-tanh-points-1000.log
-
-# # elu
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 10 --__units__ 10 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-10-__units__-10-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 10 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-25-__units__-10-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 50 --units 50 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-50-units-50-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
-
-# # elu
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-50-__units__-25-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-100-__units__-100-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-200-__units__-25-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 100 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-100-units-100-__nb_plays__-200-__units__-100-__activation__-elu-points-1000.log
-
-# # elu
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 25 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-25-__units__-25-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 25 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-50-__units__-25-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 50 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-50-__units__-50-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 50 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-100-__units__-50-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 100 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-100-__units__-100-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 200 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-200-__units__-100-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 100 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-500-__units__-100-__activation__-elu-points-1000.log
-# python run_model.py --epochs 1000 --diff-weights --activation tanh --mu 0 --sigma 8 --lr 0.1 --points 1000 --nb_plays 500 --units 100 --__nb_plays__ 500 --__units__ 200 --__activation__ elu --force_train &> log/hnn-activation-tanh-lr-0.1-mu-0-sigma-8-nb_play-500-units-100-__nb_plays__-500-__units__-500-__activation__-elu-points-1000.log
+run ${__sigma__array[SLURM_ARRAY_TASK_ID]} ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${sigma_array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}

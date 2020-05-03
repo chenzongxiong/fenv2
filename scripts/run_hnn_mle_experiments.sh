@@ -10,12 +10,12 @@
 #SBATCH --partition=big
 #SBATCH --mail-type=end
 #SBATCH --mail-user=czxczf@gmail.com
-#SBATCH --array=0-19
+#SBATCH --array=0
 
 __nb_plays__=(25)
 __units__=(25)
 __sigma__=(0.1 0.5)
-sigma=(0.1 0.5)
+sigma=(0.5 0.1)
 
 __nb_plays__array=()
 __units__array=()
@@ -68,6 +68,4 @@ function run {
 run ${__sigma__array[SLURM_ARRAY_TASK_ID]} ${__nb_plays__array[SLURM_ARRAY_TASK_ID]} ${__units__array[SLURM_ARRAY_TASK_ID]} ${sigma_array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}
 
 # python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.1 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh --learnable-mu
-
-# python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.5 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh
 # python run_hnn_mle.py --__nb_plays__ 25 --__units__ 25 --__activation__ elu --batch_size 1000 --ensemble 1 --force-train --__mu__ 0 --__sigma__ 0.5 --mu 0 --sigma 0.1 --method mc --nb_plays 50 --units 50 --activation tanh --learnable-mu

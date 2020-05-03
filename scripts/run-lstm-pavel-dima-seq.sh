@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH -J run-lstm-dima-sequence
-#SBATCH -D /home/zxchen/fenv2
-#SBATCH -o ./tmp/run-lstm-dima-sequence-multiple-times-__units__-16-%a.log
+#SBATCH -D /data/scratch/zxchen/fenv2
+#SBATCH -o ./tmp/run-lstm-dima-sequence-multiple-times-epochs-2500-%a.log
 #SBATCH --nodes=1
 #SBATCH --constraint "AMD"
 #SBATCH --mem=80G
@@ -10,7 +10,7 @@
 #SBATCH --partition=big
 #SBATCH --mail-type=end
 #SBATCH --mail-user=czxczf@gmail.com
-#SBATCH --array=40-59
+#SBATCH --array=0-119
 
 __units__=(1 8 16 32 64 128)
 __units__array=()
@@ -33,6 +33,7 @@ function run_pavel {
     ensemble=$2
     host_name=`hostname`
     echo "Run pavel with  __units__=${__unit__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}, ensemble=${ensemble}"
+    source /home/zxchen/.venv3/bin/activate
     python lstm/lstm_hysteretical.py --epochs 3000 --force_train --lr 0.001 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ ${__unit__} --method debug-pavel --loss mse --diff-weights --ensemble ${ensemble}
 }
 
@@ -41,15 +42,16 @@ function run_dima {
     ensemble=$2
     host_name=`hostname`
     echo "Run dima with  __units__=${__unit__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}, ensemble ${ensemble}"
-    python lstm/lstm_hysteretical.py --epochs 3000 --force_train --lr 0.01 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ ${__unit__} --method debug-dima --loss mse --diff-weights --ensemble ${ensemble}
+    source /home/zxchen/.venv3/bin/activate
+    python lstm/lstm_hysteretical.py --epochs 2500 --force_train --lr 0.01 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ ${__unit__} --method debug-dima --loss mse --diff-weights --ensemble ${ensemble}
 }
 
-function run_256 {
-    method=$1
-    host_name=`hostname`
-    echo "Run ${method} with  __units__=${__unit__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}"
-    python lstm/lstm_hysteretical.py --epochs 5000 --force_train --lr 0.01 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ 256 --method ${method} --loss mse --diff-weights
-}
+# function run_256 {
+#     method=$1
+#     host_name=`hostname`
+#     echo "Run ${method} with  __units__=${__unit__}, job id ${SLURM_JOB_ID}, task id ${SLURM_ARRAY_TASK_ID}, hostname ${host_name}"
+#     python lstm/lstm_hysteretical.py --epochs 5000 --force_train --lr 0.01 --mu 0 --sigma 0 --units 50 --nb_plays 50 --points 1000 --__units__ 256 --method ${method} --loss mse --diff-weights
+# }
 
 # run_pavel ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}
 run_dima ${__units__array[SLURM_ARRAY_TASK_ID]} ${ensemble_array[SLURM_ARRAY_TASK_ID]}

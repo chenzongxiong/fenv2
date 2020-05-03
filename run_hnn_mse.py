@@ -146,12 +146,15 @@ if __name__ == "__main__":
     parser.add_argument('--force_train', dest='force_train',
                         required=False,
                         action="store_true")
-
+    parser.add_argument("--method", dest="method",
+                        required=False,
+                        default='sin',
+                        type=str)
     argv = parser.parse_args(sys.argv[1:])
 
 
     loss_name = 'mse'
-    method = 'sin'
+    method = argv.method
     input_dim = 1
     state = 0
     __state__ = 0
@@ -257,13 +260,6 @@ if __name__ == "__main__":
         loss_file_name=loss_history_fname,
         weights_name=weights_fname,
         epochs=epochs)
-
-    # test_inputs, predictions = predict(inputs=test_inputs,
-    #                                    outputs=test_outputs,
-    #                                    units=__units__,
-    #                                    activation=__activation__,
-    #                                    nb_plays=__nb_plays__,
-    #                                    weights_name=weights_fname)
 
     test_inputs, predictions = predict(inputs=[train_inputs, test_inputs],
                                        outputs=[train_outputs, test_outputs],
