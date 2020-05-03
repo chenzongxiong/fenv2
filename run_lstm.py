@@ -235,7 +235,7 @@ def lstm_4(input_fname, units, capacity=1, epochs=5000):
 def lstm_5(input_fname, units, capacity=1, epochs=5000):
     # https://www.kaggle.com/pablocastilla/predict-stock-prices-with-lstm
     start = time.time()
-    units = 1500
+    units = 600
     _prices, _ = tdata.DatasetLoader.load_data(input_fname)
 
     prices1 = _prices[:units]
@@ -279,8 +279,8 @@ def lstm_5(input_fname, units, capacity=1, epochs=5000):
               callbacks=[early_stopping_callback], validation_split=0.05,
               shuffle=False)
 
-    pred_inputs = _prices[1500:2000]
-    truth_outputs = _prices[1501:2001]
+    pred_inputs = _prices[units-1:units+400-1]
+    truth_outputs = _prices[units:units+400]
 
     pred_inputs = pred_inputs.reshape(-1, 1, 1)
     predictions = model.predict(pred_inputs)
@@ -289,7 +289,7 @@ def lstm_5(input_fname, units, capacity=1, epochs=5000):
     mse = np.mean((truth_outputs[:100] - pred_outputs[:100]) ** 2)
     print("LSTM mse: {}".format(mse))
 
-    output_fname = "new-dataset/lstm/lstm5/price_vs_price/units-{units}/capacity-{capacity}/predictions.csv".format(units=units, capacity=capacity)
+    output_fname = "new-dataset/lstm/lstm5/price_vs_price/units-{units}/capacity-{capacity}/ensemble-{ensemble}/predictions.csv".format(units=units, capacity=capacity, ensemble=ensemble)
     tdata.DatasetSaver.save_data(pred_inputs.reshape(-1), pred_outputs.reshape(-1), output_fname)
 
     end = time.time()
@@ -300,8 +300,9 @@ def lstm_5(input_fname, units, capacity=1, epochs=5000):
 
 if __name__ == "__main__":
 
-    input_fname = "new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-10000/nb_plays-20/points-1000/input_dim-1/mu-0-sigma-110-points-1000.csv"
-
+    # input_fname = "new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-10000/nb_plays-20/points-1000/input_dim-1/mu-0-sigma-110-points-1000.csv"
+    # input_fname = "new-dataset/models/diff_weights/method-sp/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
+    input_fname = "new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--capacity", dest="capacity",
@@ -313,6 +314,10 @@ if __name__ == "__main__":
                         type=int)
 
     parser.add_argument("--method", dest="method",
+                        required=False, default=1,
+                        type=int)
+
+    parser.add_argument("--ensemble", dest="ensemble",
                         required=False, default=1,
                         type=int)
 
@@ -338,6 +343,6 @@ if __name__ == "__main__":
     elif method == 4:
         lstm_4(input_fname, units, capacity=capacity, epochs=epochs)
     elif method == 5:
-        lstm_5(input_fname, units, capacity=capacity, epochs=epochs)
+        lstm_5(input_fname, units, capacity=capacity, epochs=epochs, ensemble=ensemble)
     else:
         pass

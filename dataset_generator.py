@@ -159,7 +159,7 @@ def model_nb_plays_generator_with_noise(points=100,
     # method = 'sin'
     # method = 'debug-dima'
     # method = 'debug-pavel'
-    method = 'mc'
+    method = 'sin'
 
     run_test = False
 

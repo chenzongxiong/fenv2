@@ -95,7 +95,7 @@ if __name__ == "__main__":
     if argv.markov_chain:
         excel_fname = './new-dataset/lstm/diff_weights/method-sin/lstm-mc-mle-sigma-{}-__activation__-{}.xlsx'.format(sigma, __activation__)
     elif argv.diff_weights:
-        __units__ = 16
+        __units__ = 128
         excel_fname = './new-dataset/lstm/diff_weights/method-{}/lstm-all-sigma-{}-units-{}.xlsx'.format(method, sigma, __units__)
     else:
         excel_fname = './new-dataset/lstm/method-sin/lstm-all-sigma-{}.xlsx'.format(sigma)
@@ -139,7 +139,7 @@ if __name__ == "__main__":
         normalizedframe = base.copy(deep=False)
         diff_frame = diff_frame.assign(outputs=(_base_output[1:] - _base_output[:-1] - _base_mu) / _base_sigma)
 
-        __units__ = 16
+        __units__ = 128
         for ensemble in ensemble_LIST:
         # for __units__ in __units__LIST:
             # ensemble = 1
