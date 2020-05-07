@@ -156,6 +156,7 @@ def mle_loss(model, mu, sigma, activation='tanh'):
         z2 = z[:, 2 * units:3 * units]  # w_c x + w_rc h_tm1 + b_c
         z3 = z[:, 3 * units:]           # w_o x + w_ro h_tm1 + b_o
 
+        
         i = model.layers[1].cell.recurrent_activation(z0)
         f = model.layers[1].cell.recurrent_activation(z1)
         c = f * c_tm1 + i * model.layers[1].cell.activation(z2)
@@ -203,13 +204,11 @@ def mle_loss(model, mu, sigma, activation='tanh'):
 
 def lstm_mle(input_fname, units, epochs=1000, weights_fname=None, force_train=False, learning_rate=0.001, mu=0, sigma=1, activation='tanh'):
 
-    LOG.debug(colors.cyan("Using MLE to train LSTM network..."))
-    _inputs, _outputs = tdata.DatasetLoader.load_data(input_fname)
-    inputs, outputs = _inputs[:2000], _outputs[:2000]
-    # _train_inputs, _train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
-    # _test_inputs, _test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
-    _train_inputs, _train_outputs = inputs[:1500], outputs[:1500]
-    _test_inputs, _test_outputs = inputs[1500:], outputs[1500:]
+    LOG.debug(colors.cyan("Using MLE to train LSTM network, mu: {}, sigma: {}...".format(mu, sigma)))
+    inputs, outputs = tdata.DatasetLoader.load_data(input_fname)
+
+    _train_inputs, _train_outputs = inputs[:600], outputs[:600]
+    _test_inputs, _test_outputs = inputs[600:], outputs[600:]
 
     train_inputs = _train_inputs.reshape(1, -1, 1)
     train_outputs = _train_outputs.reshape(1, -1, 1)
@@ -284,6 +283,10 @@ if __name__ == "__main__":
     parser.add_argument("--sigma", dest="sigma",
                         required=False,
                         type=float)
+    parser.add_argument("--__sigma__", dest="__sigma__",
+                        required=False,
+                        type=float)
+
     parser.add_argument("--lr", dest="lr",
                         required=False, default=0.001,
                         type=float)
@@ -336,8 +339,10 @@ if __name__ == "__main__":
     units = argv.units
     __units__ = argv.__units__  # 16, 32, 64, 128
     __activation__ = argv.__activation__  # 16, 32, 64, 128
-    mu = int(argv.mu)
-    sigma = int(argv.sigma)
+    mu = 0
+    sigma = argv.sigma
+    __sigma__ = argv.__sigma__
+
     points = argv.points
     epochs = argv.epochs
     force_train = argv.force_train
@@ -348,23 +353,24 @@ if __name__ == "__main__":
     ensemble = argv.ensemble
 
     input_dim = 1
-    markov_chain = argv.mc
-    if markov_chain is True:
-        input_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=1000, input_dim=input_dim, loss=loss, __activation__=__activation__)
-        prediction_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, __activation__=__activation__)
-        loss_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, __activation__=__activation__)
-        weights_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, __activation__=__activation__)
+    # markov_chain = argv.mc
+    # if markov_chain is True:
+    #     input_fname = constants.DATASET_PATH['models_diff_weights_mc_stock_model'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=1000, input_dim=input_dim, loss=loss, __activation__=__activation__)
+    #     prediction_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, __activation__=__activation__)
+    #     loss_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, __activation__=__activation__)
+    #     weights_fname = constants.DATASET_PATH['lstm_diff_weights_mc_stock_model_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, __activation__=__activation__)
 
-    elif argv.diff_weights is True:
+    # el
+    if argv.diff_weights is True:
         input_fname = constants.DATASET_PATH['models_diff_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, loss=loss)
         prediction_fname = constants.DATASET_PATH['lstm_diff_weights_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, ensemble=ensemble)
         loss_fname = constants.DATASET_PATH['lstm_diff_weights_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, ensemble=ensemble)
         weights_fname = constants.DATASET_PATH['lstm_diff_weights_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, ensemble=ensemble)
-    else:
-        input_fname = constants.DATASET_PATH['models'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, loss=loss)
-        prediction_fname = constants.DATASET_PATH['lstm_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss)
-        loss_fname = constants.DATASET_PATH['lstm_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss)
-        weights_fname = constants.DATASET_PATH['lstm_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss)
+    # else:
+    #     input_fname = constants.DATASET_PATH['models'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, loss=loss)
+    #     prediction_fname = constants.DATASET_PATH['lstm_prediction'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss)
+    #     loss_fname = constants.DATASET_PATH['lstm_loss'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss)
+    #     weights_fname = constants.DATASET_PATH['lstm_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss)
 
 
 
@@ -377,7 +383,9 @@ if __name__ == "__main__":
     # LOG.debug(colors.cyan("state: {}".format(state)))
     LOG.debug(colors.cyan("mu: {}".format(mu)))
     LOG.debug(colors.cyan("sigma: {}".format(sigma)))
+    LOG.debug(colors.cyan("__sigma__: {}".format(__sigma__)))
     LOG.debug(colors.cyan("activation: {}".format(activation)))
+    LOG.debug(colors.cyan("__activation__: {}".format(__activation__)))
     LOG.debug(colors.cyan("points: {}".format(points)))
     LOG.debug(colors.cyan("epochs: {}".format(epochs)))
     LOG.debug(colors.cyan("lr: {}".format(lr)))

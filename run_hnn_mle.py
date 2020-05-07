@@ -35,8 +35,8 @@ def fit(inputs,
         force_train=False,
         learnable_mu=False):
 
-    # epochs = 20000
-    epochs = 6000
+    epochs = 10000
+    # epochs = 6000
     # epochs = 10
 
     start = time.time()
@@ -55,6 +55,7 @@ def fit(inputs,
                       nb_plays=nb_plays,
                       learning_rate=learning_rate,
                       ensemble=ensemble,
+                      diff_weights=True,
                       learnable_mu=learnable_mu)
 
     LOG.debug("Learning rate is {}".format(learning_rate))
@@ -567,7 +568,7 @@ if __name__ == "__main__":
     argv = parser.parse_args(sys.argv[1:])
     # Hyper Parameters
     # learning_rate = 0.003
-    learning_rate = 0.07
+    learning_rate = 0.05
 
     batch_size = argv.batch_size
 
@@ -625,8 +626,7 @@ if __name__ == "__main__":
     # __activation__ = None
     # __activation__ = 'tanh'
     # __mu__ = 2.60
-    __mu__ = 0
-    __sigma__ = 1
+
     __mu__ = argv.__mu__
     __sigma__ = argv.__sigma__
 
@@ -734,7 +734,7 @@ if __name__ == "__main__":
         # inputs, outputs = outputs, inputs
         pass
     else:
-        inputs, outputs = outputs, inputs
+        # inputs, outputs = outputs, inputs
         # gap = 5
         # inputs, outputs = inputs[::gap], outputs[::gap]
         # # inputs = np.arange(800)[::4].astype(np.float32)

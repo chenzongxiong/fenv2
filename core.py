@@ -390,7 +390,9 @@ def gradient_operator(P, weights=None):
     diff_ = reshaped_P[:, 1:] - reshaped_P[:, :-1]
     x0 = tf.slice(reshaped_P, [0, 0], [1, 1])
     diff_ = tf.concat([x0, diff_], axis=1)
-    result = tf.cast(tf.abs(diff_) >= 1e-9, dtype=tf.float32)
+    result = tf.cast(tf.abs(diff_) >= 1e-9, dtype=tf.float32) + 1e-5
+
+    # LOG.debug("Result.shape: {}".format(result.shape))
 
     return tf.reshape(result * weights, shape=P.shape)
 
@@ -1374,6 +1376,8 @@ class MyModel(Layer):
                 weight = 0.5 / (_width * (1 + nb_play)) # width range from (0.1, ... 0.1 * nb_plays)
             else:
                 weight = 1.0
+
+            weight = 2 * (nb_play + 1)
             LOG.debug("MyModel {} generates {} with Weight: {}".format(self._ensemble, colors.red("Play #{}".format(nb_play+1)), weight))
 
             play = Play(units=units,
@@ -1669,7 +1673,9 @@ class MyModel(Layer):
                 # we don't care about the graidents of loss function, it's calculated by tensorflow.
                 return
 
-            normalized_J_by_hand = tf.clip_by_value(tf.abs(self.J_by_hand), clip_value_min=1e-18, clip_value_max=1e18)
+            # normalized_J_by_hand = tf.clip_by_value(tf.abs(self.J_by_hand), clip_value_min=1e-18, clip_value_max=1e18)
+            normalized_J_by_hand = tf.clip_by_value(tf.keras.backend.square(self.J_by_hand), clip_value_min=1e-18, clip_value_max=1e18)
+
 
             # TODO: support derivation for p0
             # TODO: make loss customize from outside
@@ -1709,13 +1715,15 @@ class MyModel(Layer):
                 # self.params_list += self._initial_states_list
 
             else:
-                self.loss_a = tf.keras.backend.square((self.diff - mu)/sigma) / 2
+                # self.loss_a = tf.keras.backend.square((self.diff - mu)/sigma) / 2
+                self.loss_a = tf.keras.backend.square((self.diff - mu)/sigma)
+
             self.loss_b = - tf.keras.backend.log(normalized_J_by_hand)
             # self.loss_by_hand = tf.keras.backend.mean(self.loss_a + self.loss_b)
             # self.loss_by_hand = tf.keras.backend.sum(self.loss_a + self.loss_b)
             self.loss_by_hand = tf.math.reduce_sum(self.loss_a + self.loss_b)
             # import ipdb; ipdb.set_trace()
-            self.loss = self.loss_by_hand
+            self.loss = self.loss_by_hand / 2
 
             # 10-14
             self.reg_lambda = 0.001
@@ -1753,9 +1761,10 @@ class MyModel(Layer):
                 outputs = [play.operator_layer.output for play in self.plays]
             elif self._learnable_mu:
                 # outputs = [self.loss, mse_loss1, mse_loss2, self.diff, self.curr_sigma, self.curr_mu, self.y_pred, tf.keras.backend.mean(self.loss_a), tf.keras.backend.mean(self.loss_b), self.mu] + [play.operator_layer.output for play in self.plays]
-                outputs = [self.loss, mse_loss1, mse_loss2, self.diff, self.curr_sigma, self.curr_mu, self.y_pred, tf.keras.backend.mean(self.loss_a), tf.keras.backend.mean(self.loss_b), self.mu] + [play.operator_layer.states[0] for play in self.plays] + self._initial_states_list
+                outputs = [self.loss, self.loss_by_hand, mse_loss1, mse_loss2, self.diff, self.curr_sigma, self.curr_mu, self.y_pred, tf.keras.backend.mean(self.loss_a), tf.keras.backend.mean(self.loss_b), self.mu] + [play.operator_layer.states[0] for play in self.plays] + self._initial_states_list
             else:
-                outputs = [self.loss, mse_loss1, mse_loss2, self.diff, self.curr_sigma, self.curr_mu, self.y_pred, tf.keras.backend.mean(self.loss_a), tf.keras.backend.mean(self.loss_b)] + [play.operator_layer.output for play in self.plays]
+                outputs = [self.loss, self.loss_by_hand, mse_loss1, mse_loss2, self.diff, self.curr_sigma, self.curr_mu, self.y_pred, tf.keras.backend.mean(self.loss_a), tf.keras.backend.mean(self.loss_b)] + [play.operator_layer.output for play in self.plays]
+                # outputs = [self.loss, self.loss_by_hand, mse_loss1, mse_loss2, self.diff, self.curr_sigma, self.curr_mu, self.y_pred, self.loss_a, normalized_J_by_hand] + [play.operator_layer.output for play in self.plays]
             self.train_function = tf.keras.backend.function(training_inputs,
                                                             outputs,
                                                             updates=updates)
@@ -1830,9 +1839,10 @@ class MyModel(Layer):
             return results
 
         if self._learnable_mu:
-            logger_string_epoch = "Epoch: {}, Loss: {:.7f}, MSE Loss1: {:.7f}, MSE Loss2: {:.7f}, diff.mu: {:.7f}, diff.sigma: {:.7f}, mu: {:.7f}, sigma: {:.7f}, loss_by_hand: {:.7f}, loss_by_tf: {:.7f}, loss_a: {:.7f}, loss_b: {:.7f}, learned_mu: {:.7f}"
+            logger_string_epoch = "Epoch: {}, Loss: {:.7f}, Pure Loss: {:.7f}, MSE Loss1: {:.7f}, MSE Loss2: {:.7f}, diff.mu: {:.7f}, diff.sigma: {:.7f}, mu: {:.7f}, sigma: {:.7f}, loss_by_hand: {:.7f}, loss_by_tf: {:.7f}, loss_a: {:.7f}, loss_b: {:.7f}, learned_mu: {:.7f}"
         else:
-            logger_string_epoch = "Epoch: {}, Loss: {:.7f}, MSE Loss1: {:.7f}, MSE Loss2: {:.7f}, diff.mu: {:.7f}, diff.sigma: {:.7f}, mu: {:.7f}, sigma: {:.7f}, loss_by_hand: {:.7f}, loss_by_tf: {:.7f}, loss_a: {:.7f}, loss_b: {:.7f}"
+            logger_string_epoch = "Epoch: {}, Loss: {:.7f}, Pure Loss: {:.7f}, MSE Loss1: {:.7f}, MSE Loss2: {:.7f}, diff.mu: {:.7f}, diff.sigma: {:.7f}, mu: {:.7f}, sigma: {:.7f}, loss_by_hand: {:.7f}, loss_by_tf: {:.7f}, loss_a: {:.7f}, loss_b: {:.7f}"
+            # logger_string_epoch = "Epoch: {}, Loss: {:.7f}, Pure Loss: {:.7f}, MSE Loss1: {:.7f}, MSE Loss2: {:.7f}, diff.mu: {:.7f}, diff.sigma: {:.7f}, mu: {:.7f}, sigma: {:.7f}, loss_by_hand: {:.7f}, loss_by_tf: {:.7f}, loss_a: {}, loss_b: {}"
         logger_string_step = "Steps: {}, Loss: {:.7f}, MSE Loss1: {:.7f}, MSE Loss2: {:.7f}, diff.mu: {:.7f}, diff.sigma: {:.7f}, mu: {:.7f}, sigma: {:.7f}, loss_by_hand: {:.7f}, loss_by_tf: {:.7f}, loss_a: {:.7f}, loss_b: {:.7f}"
 
         _states_list = [1.0] * self._nb_plays
@@ -1843,9 +1853,9 @@ class MyModel(Layer):
             for j in range(steps_per_epoch):
                 ins = inputs[j*input_dim:(j+1)*input_dim]
                 if self._learnable_mu:
-                    cost, mse_cost1, mse_cost2, diff_res, sigma_res, mu_res, y_pred, loss_a, loss_b, learned_mu, *operator_outputs = self.train_function([ins.reshape(1, 1, -1)])
+                    cost, mle_loss, mse_cost1, mse_cost2, diff_res, sigma_res, mu_res, y_pred, loss_a, loss_b, learned_mu, *operator_outputs = self.train_function([ins.reshape(1, 1, -1)])
                 else:
-                    cost, mse_cost1, mse_cost2, diff_res, sigma_res, mu_res, y_pred, loss_a, loss_b, *operator_outputs = self.train_function([ins.reshape(1, 1, -1)])
+                    cost, mle_loss, mse_cost1, mse_cost2, diff_res, sigma_res, mu_res, y_pred, loss_a, loss_b, *operator_outputs = self.train_function([ins.reshape(1, 1, -1)])
                 states_list = [o.reshape(-1)[-1] for o in operator_outputs]
                 self.reset_states(states_list=states_list)
 
@@ -1856,15 +1866,15 @@ class MyModel(Layer):
                     patience_list = []
                 loss_by_hand, loss_by_tf = 0, 0
             if self._learnable_mu:
-                LOG.debug(logger_string_epoch.format(i, float(cost), float(mse_cost1), float(mse_cost2), float(diff_res.mean()), float(diff_res.std()), float(__mu__), float(__sigma__), float(loss_by_hand), float(loss_by_tf), loss_a, loss_b, float(learned_mu)))
+                LOG.debug(logger_string_epoch.format(i, float(cost), float(mle_loss), float(mse_cost1), float(mse_cost2), float(diff_res.mean()), float(diff_res.std()), float(__mu__), float(__sigma__), float(loss_by_hand), float(loss_by_tf), loss_a, loss_b, float(learned_mu)))
             else:
-                LOG.debug(logger_string_epoch.format(i, float(cost), float(mse_cost1), float(mse_cost2), float(diff_res.mean()), float(diff_res.std()), float(__mu__), float(__sigma__), float(loss_by_hand), float(loss_by_tf), loss_a, loss_b))
+                LOG.debug(logger_string_epoch.format(i, float(cost), float(mle_loss), float(mse_cost1), float(mse_cost2), float(diff_res.mean()), float(diff_res.std()), float(__mu__), float(__sigma__), float(loss_by_hand), float(loss_by_tf), loss_a, loss_b))
 
             # LOG.debug("Play States: {}".format(operator_outputs))
             LOG.debug("================================================================================")
             # save weights every 1000 epochs
-            # if i % 1000 == 0 and i != 0:
-            #     self.save_weights("{}-epochs-{}.h5".format(weights_fname[:-3], i))
+            if i % 1000 == 0 and i != 0:
+                self.save_weights("{}-epochs-{}.h5".format(weights_fname[:-3], i))
             # import ipdb; ipdb.set_trace()
             # _states_list = operator_outputs[self._nb_plays:]
             self.cost_history.append([i, cost, mse_cost1, mse_cost2, loss_a, loss_b])
