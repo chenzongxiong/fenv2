@@ -71,8 +71,8 @@ def lstm(input_fname, units, epochs=1000, weights_fname=None, force_train=False,
     return _test_inputs, pred_outputs, rmse, end-start
 
 
-def mle_loss(model, mu, sigma, activation='tanh'):
-    def tanh_loss(y_true, y_pred):
+def mle_loss(model, mu, sigma, activation='tanh', debug=False):
+    def tanh_helper(y_true, y_pred):
         # Extract weights from layers
         lstm_kernel = model.layers[1].cell.kernel
         lstm_recurrent_kernel = model.layers[1].cell.recurrent_kernel
@@ -99,18 +99,22 @@ def mle_loss(model, mu, sigma, activation='tanh'):
         z2 = z[:, 2 * units:3 * units]  # w_c x + w_rc h_tm1 + b_c
         z3 = z[:, 3 * units:]           # w_o x + w_ro h_tm1 + b_o
 
-        i = model.layers[1].cell.recurrent_activation(z0)
-        f = model.layers[1].cell.recurrent_activation(z1)
-        c = f * c_tm1 + i * model.layers[1].cell.activation(z2)
-        o = model.layers[1].cell.recurrent_activation(z3)
-
         _tanh = tf.keras.activations.tanh
 
+        i = model.layers[1].cell.recurrent_activation(z0)
+        f = model.layers[1].cell.recurrent_activation(z1)
+        c_tilde = _tanh(z2)
+        c = f * c_tm1 + i * c_tilde
+        o = model.layers[1].cell.recurrent_activation(z3)
+
+
+
         d_o = _tanh(c) * o * (1-o) * w_o
-        d_i = i * (1-i) * w_i * _tanh(z2)
+        d_i = i * (1-i) * w_i * c_tilde
         d_f = c_tm1 * f * (1-f) * w_f
-        d_c = i * (1-_tanh(z2) * _tanh(z2)) * c_tm1 * (1 - c_tm1) * w_c
-        d_h = d_o + o*(1-_tanh(c)*_tanh(c))*(d_f + d_i + d_c)
+        # d_c = i * (1-_tanh(z2)) * (1+_tanh(z2)) * c_tm1 * (1 - c_tm1) * w_c
+        d_c = i * (1-c_tilde) * (1+c_tilde) * w_c
+        d_h = d_o + o*(1-_tanh(c))*(1+_tanh(c))*(d_f + d_i + d_c)
 
         d_b = tf.keras.backend.sum(tf.keras.backend.dot(d_h, dense_kernel), axis=1, keepdims=True)
 
@@ -118,7 +122,7 @@ def mle_loss(model, mu, sigma, activation='tanh'):
         # mu = 0
         # sigma = 1
 
-        _diff = y_pred[:, 1:, :] - y_pred[:, :-1, :][0, :, :]
+        _diff = y_pred[0, 1:, 0] - y_pred[0, :-1, 0]
         diff = tf.reshape(_diff, shape=(-1,))
         _normalized_db = tf.clip_by_value(tf.abs(d_b), clip_value_min=1e-18, clip_value_max=1e18)
         normalized_db = tf.reshape(_normalized_db, shape=(-1,))[1:]
@@ -127,9 +131,74 @@ def mle_loss(model, mu, sigma, activation='tanh'):
         loss2 = -tf.keras.backend.log(normalized_db)
 
         loss = loss1 + loss2
-        return tf.math.reduce_sum(loss)
+        # return tf.math.reduce_sum(loss)
+        return tf.math.reduce_sum(loss), tf.math.reduce_sum(loss1), tf.math.reduce_sum(loss2), tf.math.reduce_sum(d_o), tf.math.reduce_sum(d_i), tf.math.reduce_sum(d_c), tf.math.reduce_sum(d_h), tf.math.reduce_sum(d_b), tf.math.reduce_sum(d_f)
 
-    def elu_loss(y_true, y_pred):
+    # def elu_loss(y_true, y_pred):
+    #     # Extract weights from layers
+    #     lstm_kernel = model.layers[1].cell.kernel
+    #     lstm_recurrent_kernel = model.layers[1].cell.recurrent_kernel
+    #     units = model.layers[1].cell.units
+    #     h_tm1 = model.layers[1].states[0]  # previous memory state
+    #     c_tm1 = model.layers[1].states[1]  # previous carry state
+
+    #     dense_kernel = model.layers[2].kernel
+
+    #     inputs = model.layers[0].output[0, :, :]
+
+    #     z = tf.keras.backend.dot(inputs, lstm_kernel)
+    #     z += tf.keras.backend.dot(h_tm1, lstm_recurrent_kernel)
+    #     if model.layers[1].cell.use_bias:
+    #         z = tf.keras.backend.bias_add(z, model.layers[1].cell.bias)
+
+    #     w_i = lstm_kernel[:, :units]
+    #     w_f = lstm_kernel[:, units:2*units]
+    #     w_c = lstm_kernel[:, 2*units:3*units]
+    #     w_o = lstm_kernel[:, 3*units:]
+
+    #     z0 = z[:, :units]               # w_i x + w_ri h_tm1 + b_i
+    #     z1 = z[:, units:2 * units]      # w_f x + w_rf h_tm1 + b_f
+    #     z2 = z[:, 2 * units:3 * units]  # w_c x + w_rc h_tm1 + b_c
+    #     z3 = z[:, 3 * units:]           # w_o x + w_ro h_tm1 + b_o
+
+
+    #     i = model.layers[1].cell.recurrent_activation(z0)
+    #     f = model.layers[1].cell.recurrent_activation(z1)
+    #     c = f * c_tm1 + i * model.layers[1].cell.activation(z2)
+    #     o = model.layers[1].cell.recurrent_activation(z3)
+
+    #     _activation = model.layers[1].cell.activation
+    #     _elu = tf.keras.activations.elu
+
+    #     clipped_z2 = tf.clip_by_value(z2, clip_value_min=-18, clip_value_max=0)
+    #     # clipped_z2 = tf.clip_by_value(z2, clip_value_min=0)
+
+    #     clipped_c = tf.clip_by_value(c, clip_value_min=-18, clip_value_max=0)
+
+    #     d_o = _activation(c) * o * (1-o) * w_o
+    #     d_i = i * (1-i) * w_i * _activation(z2)
+    #     d_f = c_tm1 * f * (1-f) * w_f
+    #     d_c = i * tf.keras.backend.exp(clipped_z2) * c_tm1 * (1 - c_tm1) * w_c
+
+    #     d_h = d_o + o*tf.keras.backend.exp(clipped_c)*(d_f + d_i + d_c)
+
+    #     d_b = tf.keras.backend.sum(tf.keras.backend.dot(d_h, dense_kernel), axis=1, keepdims=True)
+
+    #     _diff = y_pred[0, 1:, 0] - y_pred[0, :-1, 0]
+    #     diff = tf.reshape(_diff, shape=(-1,))
+    #     _normalized_db = tf.clip_by_value(tf.keras.backend.square(d_b), clip_value_min=1e-18, clip_value_max=1e18)
+    #     normalized_db = tf.reshape(_normalized_db, shape=(-1,))[1:]
+
+    #     loss1 = tf.keras.backend.square((diff - mu)/sigma)
+    #     # loss1 = tf.clip_by_value(loss1, clip_value_min=1e-9, clip_value_max=1e9)
+    #     loss2 = -tf.keras.backend.log(normalized_db)
+
+    #     loss = (loss1 + loss2)/2.0
+    #     import ipdb; ipdb.set_trace()
+
+    #     return tf.math.reduce_sum(loss)
+
+    def elu_helper(y_true, y_pred):
         # Extract weights from layers
         lstm_kernel = model.layers[1].cell.kernel
         lstm_recurrent_kernel = model.layers[1].cell.recurrent_kernel
@@ -156,47 +225,166 @@ def mle_loss(model, mu, sigma, activation='tanh'):
         z2 = z[:, 2 * units:3 * units]  # w_c x + w_rc h_tm1 + b_c
         z3 = z[:, 3 * units:]           # w_o x + w_ro h_tm1 + b_o
 
-        
+        _elu = tf.keras.activations.elu
+        # _tanh = tf.keras.activations.tanh
+
         i = model.layers[1].cell.recurrent_activation(z0)
         f = model.layers[1].cell.recurrent_activation(z1)
-        c = f * c_tm1 + i * model.layers[1].cell.activation(z2)
+        c_tilde = _elu(z2)
+        c = f * c_tm1 + i * c_tilde
         o = model.layers[1].cell.recurrent_activation(z3)
 
-        _activation = model.layers[1].cell.activation
-        _elu = tf.keras.activations.elu
+        # i = model.layers[1].cell.recurrent_activation(z0)
+        # f = model.layers[1].cell.recurrent_activation(z1)
+        # c = f * c_tm1 + i * model.layers[1].cell.activation(z2)
+        # o = model.layers[1].cell.recurrent_activation(z3)
 
-        clipped_z2 = tf.clip_by_value(z2, clip_value_min=-100, clip_value_max=0)
-        clipped_c = tf.clip_by_value(c, clip_value_min=-100, clip_value_max=0)
+        # _activation = model.layers[1].cell.activation
 
-        d_o = _activation(c) * o * (1-o) * w_o
-        d_i = i * (1-i) * w_i * _activation(z2)
+        clipped_z2 = tf.clip_by_value(z2, clip_value_min=-9, clip_value_max=0)
+        # clipped_z2 = tf.clip_by_value(z2, clip_value_min=0)
+
+        clipped_c = tf.clip_by_value(c, clip_value_min=-9, clip_value_max=0)
+
+        d_o = _elu(c) * o * (1-o) * w_o
+        d_i = i * (1-i) * w_i * c_tilde
         d_f = c_tm1 * f * (1-f) * w_f
-        d_c = i * tf.keras.backend.exp(clipped_z2) * c_tm1 * (1 - c_tm1) * w_c
+        d_c = i * tf.keras.backend.exp(clipped_z2) * w_c
 
         d_h = d_o + o*tf.keras.backend.exp(clipped_c)*(d_f + d_i + d_c)
 
         d_b = tf.keras.backend.sum(tf.keras.backend.dot(d_h, dense_kernel), axis=1, keepdims=True)
 
-        _diff = y_pred[:, 1:, :] - y_pred[:, :-1, :][0, :, :]
+        _diff = y_pred[0, 1:, 0] - y_pred[0, :-1, 0]
         diff = tf.reshape(_diff, shape=(-1,))
-        _normalized_db = tf.clip_by_value(tf.abs(d_b), clip_value_min=1e-18, clip_value_max=1e18)
+        _normalized_db = tf.clip_by_value(tf.keras.backend.square(d_b), clip_value_min=1e-18, clip_value_max=1e18)
         normalized_db = tf.reshape(_normalized_db, shape=(-1,))[1:]
 
-        loss1 = tf.keras.backend.square((diff - mu)/sigma) / 2.0
+        loss1 = tf.keras.backend.square((diff - mu)/sigma)
+        loss1 = tf.clip_by_value(loss1, clip_value_min=1e-18, clip_value_max=1e18)
         loss2 = -tf.keras.backend.log(normalized_db)
 
-        loss = loss1 + loss2
-        # import ipdb; ipdb.set_trace()
+        loss = (loss1 + loss2)/2.0
 
-        return tf.math.reduce_sum(loss)
+        return tf.math.reduce_sum(loss), tf.math.reduce_sum(loss1), tf.math.reduce_sum(loss2), tf.math.reduce_sum(d_o), tf.math.reduce_sum(d_i), tf.math.reduce_sum(d_c), tf.math.reduce_sum(d_h), tf.math.reduce_sum(d_b), tf.math.reduce_sum(d_f)
+
+    def debug_loss(y_true, y_pred):
+        # return elu_helper(y_true, y_pred)[0]
+        # import ipdb; ipdb.set_trace()
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[0]
+
+    def debug_loss1(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+
+        return mylocals[func_name](y_true, y_pred)[1]
+        # return elu_helper(y_true, y_pred)[1]
+
+    def debug_loss2(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[2]
+        # return elu_helper(y_true, y_pred)[1]
+
+        return elu_helper(y_true, y_pred)[2]
+
+    def debug_d_o(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[3]
+        # return elu_helper(y_true, y_pred)[1]
+
+        return elu_helper(y_true, y_pred)[3]
+
+    def debug_d_i(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[4]
+        # return elu_helper(y_true, y_pred)[1]
+
+        return elu_helper(y_true, y_pred)[4]
+
+    def debug_d_c(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[5]
+        # return elu_helper(y_true, y_pred)[1]
+
+        return elu_helper(y_true, y_pred)[5]
+
+    def debug_d_h(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[6]
+        # return elu_helper(y_true, y_pred)[1]
+
+        return elu_helper(y_true, y_pred)[6]
+
+    def debug_d_b(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[7]
+        # return elu_helper(y_true, y_pred)[1]
+
+
+    def debug_d_f(y_true, y_pred):
+        func_name = '{}_helper'.format(activation)
+        return mylocals[func_name](y_true, y_pred)[8]
+        # return elu_helper(y_true, y_pred)[1]
+
+        return elu_helper(y_true, y_pred)[8]
+
+    # if debug == 'loss' and activation == 'elu':
+    #     return debug_loss
+
+    # if debug == 'loss1' and activation == 'elu':
+    #     return debug_loss1
+
+    # if debug == 'loss2' and activation == 'elu':
+    #     return debug_loss2
+
+
+    # if debug == 'd_o' and activation == 'elu':
+    #     return debug_d_o
+    # if debug == 'd_h' and activation == 'elu':
+    #     return debug_d_h
+    # if debug == 'd_i' and activation == 'elu':
+    #     return debug_d_i
+
+    # if debug == 'd_c' and activation == 'elu':
+    #     return debug_d_c
+    # if debug == 'd_b' and activation == 'elu':
+    #     return debug_d_b
+    # if debug == 'd_f' and activation == 'elu':
+    #     return debug_d_f
+    mylocals = locals()
+    if debug == 'loss':
+        return debug_loss
+
+    if debug == 'loss1':
+        return debug_loss1
+
+    if debug == 'loss2':
+        return debug_loss2
+
+
+    if debug == 'd_o':
+        return debug_d_o
+    if debug == 'd_h':
+        return debug_d_h
+    if debug == 'd_i':
+        return debug_d_i
+
+    if debug == 'd_c':
+        return debug_d_c
+    if debug == 'd_b':
+        return debug_d_b
+    if debug == 'd_f':
+        return debug_d_f
+
 
 
     if activation == 'tanh':
         LOG.debug(colors.cyan("Using tanh activation"))
-        return tanh_loss
+        return debug_loss
     elif activation == 'elu':
         LOG.debug(colors.cyan("Using elu activation"))
-        return elu_loss
+        # return elu_loss
+        return debug_loss
     else:
         raise Exception("unknown loss function")
 
@@ -235,7 +423,19 @@ def lstm_mle(input_fname, units, epochs=1000, weights_fname=None, force_train=Fa
     # model.compile(loss='mse', optimizer=optimizer, metrics=['mse'])
     # mu = 0
     # sigma = 1
-    model.compile(loss=mle_loss(model, mu, sigma, activation), optimizer=optimizer, metrics=['mse'])
+    model.compile(loss=mle_loss(model, mu, sigma, activation), optimizer=optimizer, metrics=['mse',
+                                                                                             mle_loss(model, mu, sigma, activation, 'loss'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'loss1'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'loss2'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_o'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_i'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_c'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_h'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_b'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_f'),
+
+                ])
+
     model.summary()
 
     if force_train or not os.path.isfile(weights_fname) :
@@ -342,6 +542,10 @@ if __name__ == "__main__":
     mu = 0
     sigma = argv.sigma
     __sigma__ = argv.__sigma__
+    if sigma == int(sigma):
+        sigma = int(sigma)
+    if __sigma__ == int(__sigma__):
+        __sigma__ = int(__sigma__)
 
     points = argv.points
     epochs = argv.epochs
