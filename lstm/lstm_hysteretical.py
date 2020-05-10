@@ -394,7 +394,7 @@ def lstm_mle(input_fname, units, epochs=1000, weights_fname=None, force_train=Fa
 
     LOG.debug(colors.cyan("Using MLE to train LSTM network, mu: {}, sigma: {}...".format(mu, sigma)))
     inputs, outputs = tdata.DatasetLoader.load_data(input_fname)
-
+    inputs, outputs = inputs[:1000], outputs[:1000]
     _train_inputs, _train_outputs = inputs[:600], outputs[:600]
     _test_inputs, _test_outputs = inputs[600:], outputs[600:]
 

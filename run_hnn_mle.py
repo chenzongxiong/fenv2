@@ -568,7 +568,8 @@ if __name__ == "__main__":
     argv = parser.parse_args(sys.argv[1:])
     # Hyper Parameters
     # learning_rate = 0.003
-    learning_rate = 0.05
+    # learning_rate = 0.05
+    learning_rate = 0.07
 
     batch_size = argv.batch_size
 
@@ -604,7 +605,8 @@ if __name__ == "__main__":
     if mu == int(mu):
         mu = int(mu)
 
-    points = 1000
+    # points = 1000
+    points = 0
     input_dim = 1
     ############################## ground truth #############################
     nb_plays = argv.nb_plays
@@ -717,7 +719,7 @@ if __name__ == "__main__":
                                                           sigma=sigma,
                                                           units=units,
                                                           nb_plays=nb_plays,
-                                                          points=1000,
+                                                          points=points,
                                                           input_dim=input_dim)
 
     LOG.debug("Load data from file: {}".format(colors.cyan(fname)))
@@ -916,7 +918,7 @@ if __name__ == "__main__":
         sys.exit(0)
     else:
         LOG.debug("START to FIT via {}".format(colors.red(loss_name.upper())))
-        _inputs, _outputs = inputs[:2000], outputs[:2000]
+        _inputs, _outputs = inputs[:1000], outputs[:1000]
         # train_inputs, train_outputs = _inputs[:1500], _outputs[:1500]
         # test_inputs, test_outputs = _inputs[1500:], _outputs[1500:]
         train_inputs, train_outputs = _inputs[:600], _outputs[:600]
