@@ -12,7 +12,7 @@ if __name__ == '__main__':
     activation = None
     state = 0
     mu = 0
-    sigma = 110
+    sigma = 20
     units = 0
     nb_plays = 0
     points = 0
@@ -30,9 +30,9 @@ if __name__ == '__main__':
                                                           input_dim=input_dim)
     inputs, outputs = tdata.DatasetLoader.load_data(fname)
     diff = outputs[1:] - outputs[:-1]
-    mu = diff.mean()
-    std = diff.std()
-    rescale_diff = (diff-mu)/std
+    _mu = diff.mean()
+    _std = diff.std()
+    rescale_diff = (diff-_mu)/_std
 
 
     rescale_outputs = [0]
