@@ -310,8 +310,15 @@ DATASET_PATH = dict(
     ################################################################################
     gru_diff_weights_prediction=_prefix+'/gru/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/predictions.csv',
     gru_diff_weights_loss=_prefix+'/gru/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/loss.csv',
-    gru_diff_weights_loss_file=_prefix+'/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/history-lr-{learning_rate}.csv',
+    gru_diff_weights_loss_file=_prefix+'/gru/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/history-lr-{learning_rate}.csv',
     gru_diff_weights_weights=_prefix+'/gru/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/model-weights.h5',
+
+
+    ################################################################################
+    rnn_diff_weights_prediction=_prefix+'/rnn/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/predictions.csv',
+    rnn_diff_weights_loss=_prefix+'/rnn/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/loss.csv',
+    rnn_diff_weights_loss_file=_prefix+'/rnn/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/history-lr-{learning_rate}.csv',
+    rnn_diff_weights_weights=_prefix+'/rnn/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/model-weights.h5',
 
 
 )
