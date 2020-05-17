@@ -394,9 +394,13 @@ def lstm_mle(input_fname, units, epochs=1000, weights_fname=None, force_train=Fa
 
     LOG.debug(colors.cyan("Using MLE to train LSTM network, mu: {}, sigma: {}...".format(mu, sigma)))
     inputs, outputs = tdata.DatasetLoader.load_data(input_fname)
-    inputs, outputs = inputs[:1000], outputs[:1000]
-    _train_inputs, _train_outputs = inputs[:600], outputs[:600]
-    _test_inputs, _test_outputs = inputs[600:], outputs[600:]
+    inputs, outputs = inputs[:1700], outputs[:1700]
+    _train_inputs, _train_outputs = inputs[:1300], outputs[:1300]
+    _test_inputs, _test_outputs = inputs[1300:], outputs[1300:]
+
+    # inputs, outputs = inputs[:1000], outputs[:1000]
+    # _train_inputs, _train_outputs = inputs[:600], outputs[:600]
+    # _test_inputs, _test_outputs = inputs[600:], outputs[600:]
 
     train_inputs = _train_inputs.reshape(1, -1, 1)
     train_outputs = _train_outputs.reshape(1, -1, 1)
@@ -610,7 +614,7 @@ if __name__ == "__main__":
                                                              force_train=force_train,
                                                              learning_rate=lr,
                                                              mu=mu,
-                                                             sigma=sigma,
+                                                             sigma=__sigma__,
                                                              activation=__activation__)
     else:
         raise Exception("Unknown loss function")

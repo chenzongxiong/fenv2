@@ -307,5 +307,11 @@ DATASET_PATH = dict(
     lstm_diff_weights_mc_stock_model_loss_file=_prefix+'/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/markov_chain/units#-{__units__}/activation#-{__activation__}/loss-{loss}/mle-loss-lr-{learning_rate}.csv',
     lstm_diff_weights_mc_stock_model_weights=_prefix+'/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/markov_chain/units#-{__units__}/activation#-{__activation__}/loss-{loss}/model-weights.h5',
 
+    ################################################################################
+    gru_diff_weights_prediction=_prefix+'/gru/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/predictions.csv',
+    gru_diff_weights_loss=_prefix+'/gru/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/loss.csv',
+    gru_diff_weights_loss_file=_prefix+'/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/history-lr-{learning_rate}.csv',
+    gru_diff_weights_weights=_prefix+'/gru/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-{loss}/model-weights.h5',
+
 
 )
