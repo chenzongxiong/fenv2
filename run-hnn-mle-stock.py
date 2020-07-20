@@ -88,6 +88,7 @@ def predict(inputs,
             units=1,
             activation='tanh',
             nb_plays=1,
+            ensemble=1,
             weights_name='model.h5'):
     with open("{}/{}plays/input_shape.txt".format(weights_name[:-3], nb_plays), 'r') as f:
         line = f.read()
@@ -100,31 +101,69 @@ def predict(inputs,
     input_dim = shape[2]
     timestep = shape[1]
 
-    # num_samples = inputs.shape[0] // (input_dim * timestep)
-    if input_dim * timestep > inputs.shape[0]:
-        # we need to append extra value to make test_inputs and train_outputs have the same
-        # keep test_outputs unchanged
-        inputs = np.hstack([inputs, np.zeros(input_dim*timestep-test_inputs.shape[0])])
+    if input_dim * timestep > inputs[1].shape[0]:
+        # we need to append extra value to make test_inputs and test_outpus to have the same size
+        # keep test_ouputs unchange
+        inputs[0] = inputs[0]
+        inputs[1] = np.hstack([inputs[1], np.zeros(input_dim*timestep-inputs[1].shape[0])])
 
     start = time.time()
-    parallel_prediction = True
     mymodel = MyModel(input_dim=input_dim,
                       timestep=timestep,
                       units=units,
                       activation=activation,
                       nb_plays=nb_plays,
-                      parallel_prediction=parallel_prediction)
+                      ensemble=ensemble,
+                      parallel_prediction=True)
 
     mymodel.load_weights(weights_fname)
-    predictions = mymodel.predict_parallel(inputs)
+    op_outputs = mymodel.get_op_outputs_parallel(inputs[0])
+    states_list = [o[-1] for o in op_outputs]
+    predictions = mymodel.predict_parallel(inputs[1], states_list=states_list)
 
     end = time.time()
     LOG.debug("time cost: {}s".format(end-start))
-    predictions = predictions[:outputs.shape[0]]
-    loss = ((predictions - outputs) ** 2).mean()
+
+    predictions = predictions[:outputs[1].shape[0]]
+    loss = ((predictions - outputs[1]) ** 2).mean()
     loss = float(loss)
     LOG.debug("loss: {}".format(loss))
-    return inputs[:outputs.shape[0]], predictions
+
+    return inputs[1][:outputs[1].shape[0]], predictions
+
+
+
+    # input_dim = shape[2]
+    # timestep = shape[1]
+
+    # # num_samples = inputs.shape[0] // (input_dim * timestep)
+    # if input_dim * timestep > inputs.shape[0]:
+    #     # we need to append extra value to make test_inputs and train_outputs have the same
+    #     # keep test_outputs unchanged
+    #     inputs = np.hstack([inputs[1], np.zeros(input_dim*timestep-test_inputs.shape[0])])
+
+    # start = time.time()
+    # parallel_prediction = True
+    # mymodel = MyModel(input_dim=input_dim,
+    #                   timestep=timestep,
+    #                   units=units,
+    #                   activation=activation,
+    #                   nb_plays=nb_plays,
+    #                   parallel_prediction=parallel_prediction)
+
+    # mymodel.load_weights(weights_fname)
+    # op_outputs = mymodel.get_op_outputs_parallel(inputs[0])
+    # states_list = [o[-1] for o in op_outputs]
+    # predictions = mymodel.predict_parallel(inputs[1], states_list=states_list)
+    # # predictions = mymodel.predict_parallel(inputs)
+
+    # end = time.time()
+    # LOG.debug("time cost: {}s".format(end-start))
+    # predictions = predictions[:outputs.shape[0]]
+    # loss = ((predictions - outputs) ** 2).mean()
+    # loss = float(loss)
+    # LOG.debug("loss: {}".format(loss))
+    # return inputs[:outputs.shape[0]], predictions
 
 
 def trend(prices,
@@ -187,8 +226,19 @@ def trend(prices,
                       ensemble=ensemble)
 
     mymodel.load_weights(weights_fname, extra={'shape': shape})
-    guess_trend = mymodel.trend(prices=prices, B=B, mu=mu, sigma=sigma)
 
+    op_outputs = mymodel.get_op_outputs_parallel(prices[:1300])
+    states_list = [o[-1] for o in op_outputs]
+
+    guess_trend = mymodel.trend(prices=prices, B=B, mu=mu, sigma=sigma, states_list=states_list)
+
+    end = time.time()
+    # LOG.debug("time cost: {}s".format(end-start))
+    # predictions = predictions[:outputs[1].shape[0]]
+    # loss = ((predictions - outputs[1]) ** 2).mean()
+    # loss = float(loss)
+    # LOG.debug("loss: {}".format(loss))
+    # return inputs[1][:outputs[1].shape[0]], predictions
     loss = float(-1.0)
     return guess_trend, loss
 
@@ -328,22 +378,31 @@ def ttest_rel(method1, method2):
 
 
 def rmse_bucket(ground_truth_noise, ground_truth_price, predict_price, price_steps=10, noise_steps=10):
+
     diff_price_list = np.abs(ground_truth_price[1:] - ground_truth_price[:-1])
     diff_noise_list = np.abs(ground_truth_noise[1:] - ground_truth_noise[:-1])
 
     delta_price_step = (np.max(diff_price_list) - np.min(diff_price_list)) / price_steps
     delta_noise_step = (np.max(diff_noise_list) - np.min(diff_noise_list)) / noise_steps
 
+
+    # delta_price_step = np.round(delta_price_step, 4)
+    # delta_noise_step = np.round(delta_noise_step, 4)
+
     delta_price_list = [delta_price_step * i + np.min(diff_price_list) for i in range(price_steps+1)]
     delta_noise_list = [delta_noise_step * i + np.min(diff_noise_list) for i in range(noise_steps+1)]
 
     diff_ground_truth_predict_of_price_list = ground_truth_price[1:] - predict_price
+
 
     bucket = { (p, n) : [] for p in range(price_steps+1) for n in range(noise_steps+1)}
 
     max_val = -1
     i = 0
     for dp, dn, diff in zip(diff_price_list, diff_noise_list, diff_ground_truth_predict_of_price_list):
+        dp = np.round(dp, 4)
+        dn = np.round(dn, 4)
+
         _p_idx = (dp - np.min(diff_price_list)) / delta_price_step
         _n_idx = (dn - np.min(diff_noise_list)) / delta_noise_step
 
@@ -365,8 +424,11 @@ def rmse_bucket(ground_truth_noise, ground_truth_price, predict_price, price_ste
         #     for _p_idx in range(0, p_idx+1):
         #         bucket[(_p_idx, _n_idx)].append((val, dp, dn, i, predict_price[i], ground_truth_price[i+1], ground_truth_price[i]))
 
+        val = np.round(val, 4)
         bucket[(p_idx, n_idx)].append((val, dp, dn, i, predict_price[i], ground_truth_price[i+1], ground_truth_price[i]))
         i += 1
+
+    # import ipdb; ipdb.set_trace()
 
     return bucket, delta_price_step, delta_noise_step, delta_price_list, delta_noise_list, max_val
 
@@ -380,20 +442,42 @@ def rmse3d():
     from matplotlib import colors as mcolors
     from matplotlib import cm
 
-    base_file = "./new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-10000/nb_plays-20/points-1000/input_dim-1/mu-0-sigma-110-points-1000.csv"
+    # base_file = "./new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-10000/nb_plays-20/points-1000/input_dim-1/mu-0-sigma-110-points-1000.csv"
 
-    trend_file = "./new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-20/nb_plays-20/points-1000/input_dim-1/predictions-mu-0-sigma-110-points-1000/activation#-elu/state#-0/units#-100/nb_plays#-100/ensemble-11/loss-mle/trends-batch_size-1500.csv"
+    # trend_file = "./new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-20/nb_plays-20/points-1000/input_dim-1/predictions-mu-0-sigma-110-points-1000/activation#-elu/state#-0/units#-100/nb_plays#-100/ensemble-11/loss-mle/trends-batch_size-1500.csv"
+
+
+    base_file = './new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-20/units-0/nb_plays-0/points-0/input_dim-1/base.csv'
+    method = 'lstm'
+    # method = 'hnn'
+    if method == 'lstm':
+        trend_file = 'new-dataset/lstm/lstm5/price_vs_price/units-1300/capacity-128/ensemble-2000/predictions.csv'
+    elif method == 'hnn':
+        trend_file = './new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-20/units-0/nb_plays-0/points-0/input_dim-1/predictions/activation#-elu/state#-0/units#-50/nb_plays#-50/loss-mle/ensemble-17/trend.csv'
+
+    # import ipdb; ipdb.set_trace()
+
     _, ground_truth_noise = tdata.DatasetLoader.load_data(base_file)
-    ground_truth_price, predict_price = tdata.DatasetLoader.load_data(trend_file)
 
-    ground_truth_price = ground_truth_price[:100]
-    predict_price = predict_price[:100]
-    # ground_truth_noise =
+    ground_truth_price, predict_price = tdata.DatasetLoader.load_data(trend_file)
+    # import ipdb; ipdb.set_trace()
+    if method == 'lstm':
+        ground_truth_price = ground_truth_price[11:200]
+        predict_price = predict_price[11:200]
+    elif method == 'hnn':
+        ground_truth_price = ground_truth_price[:190]
+        predict_price = predict_price[:190]
+
     baseline_price = ground_truth_price[:-1]
     # ground_truth_price = ground_truth_price[1:]
     predict_price = predict_price[1:]
     # ground_truth_noise = ground_truth_noise[1001:1010]
-    ground_truth_noise = ground_truth_noise[1000:1100]
+    ground_truth_noise = ground_truth_noise[1311:1500]
+
+    # ground_truth_price = np.round(ground_truth_price, 4)
+    # baseline_price = np.round(baseline_price, 4)
+    # predict_price = np.round(predict_price, 4)
+    # ground_truth_noise = np.round(ground_truth_noise, 4)
 
     price_steps = 5
     noise_steps = 5
@@ -406,6 +490,7 @@ def rmse3d():
     rmse_steps = 5
     delta_rmse = max_rmse / rmse_steps
     delta_rmse_list = [i*delta_rmse for i in range(rmse_steps+1)]
+    import ipdb; ipdb.set_trace()
 
     def _helper(ax, _bucket, x, y, zlabel='rmse', color='cyan', func=lambda v: v):
         _zz = np.zeros((price_steps+1, noise_steps+1), dtype=np.float32)
@@ -419,7 +504,8 @@ def rmse3d():
                 _pv = [vv[1] for vv in v]
                 _nv = [vv[2] for vv in v]
                 _zz[k] = func(_v)
-                print("{}, ({}, {}), {}, {}, {}, {}".format(k, delta_price_list[_p], delta_noise_list[_n], v, _zz[k],  min(_v), max(_nv)))
+                print(k, v)
+                # print("{}, ({}, {}), {}, {}, {}, {}".format(k, delta_price_list[_p], delta_noise_list[_n], v, _zz[k],  min(_v), max(_nv)))
 
         z = _zz.T.ravel()
         print("zz: ", _zz)
@@ -437,19 +523,19 @@ def rmse3d():
         ax.w_yaxis.set_ticklabels(yticks)
 
         ax.set_xlabel('$\Delta p$')
-        ax.set_ylabel('$\Delta n$')
+        ax.set_ylabel('$\Delta b$')
         ax.set_zlabel(zlabel)
         return z
 
     fig = plt.figure(constrained_layout=True)
 
-    spec = gridspec.GridSpec(ncols=2, nrows=2, figure=fig)
+    spec = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
 
     ax1 = fig.add_subplot(spec[0, 0], projection='3d')
     ax2 = fig.add_subplot(spec[0, 1], projection='3d', sharez=ax1)
 
-    ax3 = fig.add_subplot(spec[1, 0], projection='3d')
-    ax4 = fig.add_subplot(spec[1, 1], projection='3d', sharez=ax3)
+    # ax3 = fig.add_subplot(spec[1, 0], projection='3d')
+    # ax4 = fig.add_subplot(spec[1, 1], projection='3d', sharez=ax3)
 
     _x = np.arange(len(delta_price_list))
     _y = np.arange(len(delta_noise_list))
@@ -467,48 +553,50 @@ def rmse3d():
 
     values = np.linspace(0.2, 1., x.shape[0])
     colors = cm.rainbow(values)
-
-    if baseline_max_rmse > predict_max_rmse:
-        _helper(ax2, _predict_bucket, x, y, zlabel='PREDICT-RMSE',
+    # import ipdb; ipdb.set_trace()
+    if True:
+    # if baseline_max_rmse > predict_max_rmse:
+        _helper(ax2, _predict_bucket, x, y, zlabel='Predict-RMSE',
                 # color=mcolors.CSS4_COLORS['darkorange'],
                 color=colors,
                 func=lambda v: (sum(v)/len(v))**0.5)
                 # func=lambda v: (sum(v)/len(v)))
-        _helper(ax1, _baseline_bucket, x, y, zlabel='BASELINE-RMSE',
+        _helper(ax1, _baseline_bucket, x, y, zlabel='Baseline-RMSE',
                 # color=mcolors.CSS4_COLORS['dodgerblue'],
                 color=colors,
                 func=lambda v: (sum(v)/len(v))**0.5)
                 # func=lambda v: (sum(v)/len(v)))
     else:
-        _helper(ax1, _baseline_bucket, x, y, zlabel='BASELINE-RMSE',
+        _helper(ax1, _baseline_bucket, x, y, zlabel='Baseline-RMSE',
                 # color=mcolors.CSS4_COLORS['dodgerblue'],
                 color=colors,
                 func=lambda v: (sum(v)/len(v))**0.5)
                 # func=lambda v: (sum(v)/len(v)))
-        _helper(ax2, _predict_bucket, x, y, zlabel='PREDICT-RMSE',
+        _helper(ax2, _predict_bucket, x, y, zlabel='Predict-RMSE',
                 # color=mcolors.CSS4_COLORS['darkorange'],
                 color=colors,
                 func=lambda v: (sum(v)/len(v))**0.5)
                 # func=lambda v: (sum(v)/len(v)))
 
     print("================================================================================")
-    _helper(ax3, _baseline_bucket, x, y, zlabel='BASELINE-COUNTS',
-            # color=mcolors.CSS4_COLORS['dodgerblue'],
-            color=colors,
-            func=lambda v: len(v))
-    _helper(ax4, _predict_bucket, x, y, zlabel='PREDICT-COUNTS',
-            # color=mcolors.CSS4_COLORS['darkorange'],
-            color=colors,
-            func=lambda v: len(v))
+    # _helper(ax3, _baseline_bucket, x, y, zlabel='Baseline-COUNTS',
+    #         # color=mcolors.CSS4_COLORS['dodgerblue'],
+    #         color=colors,
+    #         func=lambda v: len(v))
+    # _helper(ax4, _predict_bucket, x, y, zlabel='Predict-COUNTS',
+    #         # color=mcolors.CSS4_COLORS['darkorange'],
+    #         color=colors,
+    #         func=lambda v: len(v))
 
     plt.show()
     import ipdb; ipdb.set_trace()
 
-if __name__ == "__main__":
-    # print("Plot RMSE 3D")
-    # rmse3d()
-    # import ipdb; ipdb.set_trace()
 
+if __name__ == "__main__":
+    print("Plot RMSE 3D")
+    rmse3d()
+    import ipdb; ipdb.set_trace()
+    sys.exit(0)
     LOG.debug(colors.red("Test multiple plays"))
 
     parser = argparse.ArgumentParser()
@@ -690,6 +778,7 @@ if __name__ == "__main__":
             else:
                 raise
 
+
     # if do_trend is True:
     ################### markov chain #############################
     if mc_mode is True:
@@ -707,7 +796,7 @@ if __name__ == "__main__":
         input_file_key = 'models_diff_weights'
         loss_file_key = 'models_diff_weights_loss_history'
         predictions_file_key = 'models_diff_weights_predictions'
-
+        trends_list_file_key = 'models_diff_weights_trends_list'
 
     fname = constants.DATASET_PATH[input_file_key].format(interp=interp,
                                                           method=method,
@@ -792,7 +881,8 @@ if __name__ == "__main__":
                                                                           ensemble=ensemble,
                                                                           batch_size=batch_size)
 
-    if mc_mode is True and do_trend is True:
+    # if mc_mode is True and do_trend is True:
+    if do_trend is True:
         trends_list_fname = constants.DATASET_PATH[trends_list_file_key].format(interp=interp,
                                                                                 method=method,
                                                                                 activation=activation,
@@ -864,7 +954,9 @@ if __name__ == "__main__":
     # except FileNotFoundError:
     #     LOG.warning("Not found prediction file, no way to create confusion matrix")
 
-    if mc_mode is True and do_trend is True:
+    # if mc_mode is True and do_trend is True:
+    # import ipdb; ipdb.set_trace()
+    if do_trend is True:
         predictions, loss = trend(prices=inputs[:batch_size*2],
                                   B=outputs[:batch_size*2],
                                   mu=__mu__,
@@ -879,7 +971,8 @@ if __name__ == "__main__":
         # inputs = inputs[batch_size:batch_size+predictions.shape[-1]]
         # inputs = inputs[1000:1100]
         import ipdb; ipdb.set_trace()
-        inputs = inputs[1510:1610]
+        inputs = inputs[1310:1510]
+        tdata.DatasetSaver.save_data(inputs, predictions, trends_list_fname)
         # inputs = inputs[1510:1515]
     elif do_visualize_activated_plays is True:
         LOG.debug(colors.red("Load weights from {}, DO VISUALIZE ACTIVATED PLAYS".format(weights_fname)))
@@ -924,29 +1017,37 @@ if __name__ == "__main__":
         train_inputs, train_outputs = _inputs[:1300], _outputs[:1300]
         test_inputs, test_outputs = _inputs[1300:], _outputs[1300:]
 
-        fit(inputs=train_inputs,
-            outputs=train_outputs,
-            mu=__mu__,
-            sigma=__sigma__,
-            units=__units__,
-            activation=__activation__,
-            nb_plays=__nb_plays__,
-            learning_rate=learning_rate,
-            loss_file_name=loss_history_file,
-            weights_name=weights_fname,
-            loss_name=loss_name,
-            batch_size=batch_size,
-            ensemble=ensemble,
-            force_train=argv.force_train,
-            learnable_mu=argv.learnable_mu)
+        # fit(inputs=train_inputs,
+        #     outputs=train_outputs,
+        #     mu=__mu__,
+        #     sigma=__sigma__,
+        #     units=__units__,
+        #     activation=__activation__,
+        #     nb_plays=__nb_plays__,
+        #     learning_rate=learning_rate,
+        #     loss_file_name=loss_history_file,
+        #     weights_name=weights_fname,
+        #     loss_name=loss_name,
+        #     batch_size=batch_size,
+        #     ensemble=ensemble,
+        #     force_train=argv.force_train,
+        #     learnable_mu=argv.learnable_mu)
 
-        inputs, predictions = predict(inputs=test_inputs,
-                                      outputs=test_outputs,
-                                      units=__units__,
-                                      activation=__activation__,
-                                      nb_plays=__nb_plays__,
-                                      weights_name=weights_fname)
+        test_inputs, predictions = predict(inputs=[train_inputs, test_inputs],
+                                           outputs=[train_outputs, test_outputs],
+                                           units=__units__,
+                                           activation=__activation__,
+                                           nb_plays=__nb_plays__,
+                                           ensemble=ensemble,
+                                           weights_name=weights_fname)
 
-    LOG.debug("Write data into predicted_fname: {}".format(predicted_fname))
-    tdata.DatasetSaver.save_data(inputs, predictions, predicted_fname)
+        # inputs, predictions = predict(inputs=test_inputs,
+        #                               outputs=test_outputs,
+        #                               units=__units__,
+        #                               activation=__activation__,
+        #                               nb_plays=__nb_plays__,
+        #                               weights_name=weights_fname)
+
+        LOG.debug("Write data into predicted_fname: {}".format(predicted_fname))
+        tdata.DatasetSaver.save_data(test_inputs, predictions, predicted_fname)
     LOG.debug('========================================FINISHED========================================')

@@ -1,3 +1,4 @@
+
 import os
 import sys
 import argparse
@@ -36,7 +37,7 @@ def fit(inputs,
         learnable_mu=False):
 
     epochs = 10000
-    # epochs = 6000
+    epochs = 3000
     # epochs = 10
 
     start = time.time()
@@ -437,7 +438,7 @@ def rmse3d():
         ax.w_yaxis.set_ticklabels(yticks)
 
         ax.set_xlabel('$\Delta p$')
-        ax.set_ylabel('$\Delta n$')
+        ax.set_ylabel('$\Delta b$')
         ax.set_zlabel(zlabel)
         return z
 
@@ -516,10 +517,10 @@ if __name__ == "__main__":
                         default=1000,
                         type=int)
     parser.add_argument("--nb_plays", dest="nb_plays",
-                        default=-1,
+                        default=0,
                         type=int)
     parser.add_argument("--units", dest="units",
-                        default=-1,
+                        default=0,
                         type=int)
     parser.add_argument("--activation", dest="activation",
                         default=None,
@@ -569,7 +570,7 @@ if __name__ == "__main__":
     # Hyper Parameters
     # learning_rate = 0.003
     # learning_rate = 0.05
-    learning_rate = 0.07
+    learning_rate = 0.2
 
     batch_size = argv.batch_size
 
@@ -918,11 +919,11 @@ if __name__ == "__main__":
         sys.exit(0)
     else:
         LOG.debug("START to FIT via {}".format(colors.red(loss_name.upper())))
-        _inputs, _outputs = inputs[:1000], outputs[:1000]
-        # train_inputs, train_outputs = _inputs[:1500], _outputs[:1500]
-        # test_inputs, test_outputs = _inputs[1500:], _outputs[1500:]
-        train_inputs, train_outputs = _inputs[:600], _outputs[:600]
-        test_inputs, test_outputs = _inputs[600:], _outputs[600:]
+        _inputs, _outputs = inputs[:1700], outputs[:1700]
+        train_inputs, train_outputs = _inputs[:1500], _outputs[:1500]
+        test_inputs, test_outputs = _inputs[1500:], _outputs[1500:]
+        # train_inputs, train_outputs = _inputs[:600], _outputs[:600]
+        # test_inputs, test_outputs = _inputs[600:], _outputs[600:]
 
         fit(inputs=train_inputs,
             outputs=train_outputs,

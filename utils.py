@@ -245,15 +245,15 @@ def slide_window_average(arr, window_size=5, step=1):
 
 
 def plot_internal_transaction(hysteresis_info, i=None, predicted_price=None, **kwargs):
-    # fname1 = '../simulation/training-dataset/mu-0-sigma-110.0-points-2000/{}-brief.csv'.format(i+1500)
-    fname2 = '../simulation/training-dataset/mu-0-sigma-110.0-points-2000/{}-true-detail.csv'.format(i+1500-1)
-    # fname3 = '../simulation/training-dataset/mu-0-sigma-110.0-points-2000/{}-fake-detail.csv'.format(i+1500)
-    fname4 = './new-dataset/lstm/price_vs_price/units-1500/capacity-256/predictions.csv'
+    fname1 = '../simulation/training-dataset/mu-0-sigma-20.0-points-1700/{}-brief.csv'.format(i+1300)
+    fname2 = '../simulation/training-dataset/mu-0-sigma-20.0-points-1700/{}-true-detail.csv'.format(i+1300)
+    fname3 = '../simulation/training-dataset/mu-0-sigma-20.0-points-1700/{}-fake-detail.csv'.format(i+1300)
+    fname4 = './new-dataset/lstm/lstm5/price_vs_price/units-1300/capacity-128/ensemble-2000/predictions.csv'
     # import ipdb; ipdb.set_trace()
     # _data = np.loadtxt(fname1, delimiter=',')
     gt_data = np.loadtxt(fname2, delimiter=',')
     gt_data = gt_data[-1, 0]
-    # fake_data = np.loadtxt(fname3, delimiter=',')
+    fake_data = np.loadtxt(fname3, delimiter=',')
     lstm_data = np.loadtxt(fname4, delimiter=',')
     lstm_data = lstm_data[i-1, 1]
 
@@ -297,10 +297,13 @@ def plot_internal_transaction(hysteresis_info, i=None, predicted_price=None, **k
     fig.savefig(fname, dpi=100)
 
 
-def plot_simulation_info(i, ax):
-    fname1 = '../simulation/training-dataset/mu-0-sigma-110.0-points-2000/{}-brief.csv'.format(1500+i)
-    fname2 = '../simulation/training-dataset/mu-0-sigma-110.0-points-2000/{}-true-detail.csv'.format(1500+i)
-    fname3 = '../simulation/training-dataset/mu-0-sigma-110.0-points-2000/{}-fake-detail.csv'.format(1500+i)
+def plot_simulation_info(i, ax=None):
+    if ax is None:
+        fig, (ax, ax2) = plt.subplots(2, sharex=True, figsize=(10, 10))
+
+    fname1 = '../simulation/training-dataset/mu-0-sigma-20.0-points-1700/{}-brief.csv'.format(1300+i)
+    fname2 = '../simulation/training-dataset/mu-0-sigma-20.0-points-1700/{}-true-detail.csv'.format(1300+i)
+    fname3 = '../simulation/training-dataset/mu-0-sigma-20.0-points-1700/{}-fake-detail.csv'.format(1300+i)
 
     _data = np.loadtxt(fname1, delimiter=',')
     true_data = np.loadtxt(fname2, delimiter=',')
@@ -326,6 +329,7 @@ def plot_simulation_info(i, ax):
     ax.plot(price_list, stock_list, color='blue', marker='.', markersize=4)
     ax.set_xlabel("prices")
     ax.set_ylabel("#Noise")
+    # plt.show()
 
 
 def plot_hysteresis_info(hysteresis_info, i=None, predicted_price=None, **kwargs):
@@ -365,7 +369,6 @@ def plot_hysteresis_info(hysteresis_info, i=None, predicted_price=None, **kwargs
     ax.legend(loc='upper right', shadow=True, fontsize='large')
     ax.set_xlabel("prices")
     ax.set_ylabel("noise")
-
 
 def plot_price_span(guess_price_seq, gt_data, lstm_data, ax):
     x = range(guess_price_seq.shape[0])
@@ -427,4 +430,5 @@ if __name__ == "__main__":
     # # arr1 = slide_window_average(arr, 1)
     # # arr2 = slide_window_average(arr, 2)
     # arr3 = slide_window_average(arr, 3)
-    plot_internal_transaction(None, 0)
+    # plot_internal_transaction(None, 0)
+    plot_simulation_info(19)

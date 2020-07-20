@@ -20,7 +20,8 @@ def hnn_predict(inputs,
                 activation='tanh',
                 nb_plays=1,
                 weights_name='model.h5',
-                ensemble=1):
+                ensemble=1,
+                states_list=None):
 
     with open("{}/{}plays/input_shape.txt".format(weights_name[:-3], nb_plays), 'r') as f:
         line = f.read()
@@ -45,16 +46,20 @@ def hnn_predict(inputs,
                       activation=activation,
                       nb_plays=nb_plays,
                       parallel_prediction=True,
-                      ensemble=ensemble)
+                      ensemble=ensemble,
+                      diff_weights=True)
 
     mymodel.load_weights(weights_name)
     op_outputs = mymodel.get_op_outputs_parallel(inputs[0])
-    states_list = [o[-1] for o in op_outputs]
+    if not states_list:
+        states_list = [o[-1] for o in op_outputs]
+
+    import ipdb; ipdb.set_trace()
     predictions = mymodel.predict_parallel(inputs[1], states_list=states_list)
 
     end = time.time()
     LOG.debug("time cost: {}s".format(end-start))
-
+    # import ipdb; ipdb.set_trace()
     predictions = predictions[:outputs[1].shape[0]]
     loss = ((predictions - outputs[1]) ** 2).mean()
     loss = float(loss)
@@ -66,7 +71,7 @@ def hnn_predict(inputs,
 def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu, sigma, with_noise, diff_weights,
                                         __units__, __nb_plays__, __activation__, ensemble):
     # method = 'sin'
-    method = 'debug-pavel'
+    method = 'debug-dima'
     input_dim = 1
     state = 0
     loss = 'mse'
@@ -110,8 +115,13 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
                                                                               method=None,
                                                                               diff_weights=True,
                                                                               individual=False)
-    start_pos = 6500
-    end_pos = 8300
+
+
+    # start_pos = 6500
+    # end_pos = 8300
+
+    start_pos = 6900
+    end_pos = 9900
 
     ####### LSTM
     # learning_rate = 0.001
@@ -130,6 +140,8 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
     # model.compile(loss=loss, optimizer=optimizer, metrics=[loss])
     # model.summary()
     # weights_fname = constants.DATASET_PATH['lstm_diff_weights_weights'].format(method=method, activation=activation, state=state, mu=mu, sigma=sigma, units=units, nb_plays=nb_plays, points=points, input_dim=input_dim, __units__=__units__, loss=loss, ensemble=ensemble)
+    # import ipdb; ipdb.set_trace()
+
     # model.load_weights(weights_fname)
 
     # test_inputs = _inputs_interp.reshape(-1, 1, 1)
@@ -159,24 +171,44 @@ def model_nb_plays_generator_with_noise(points, nb_plays, units, activation, mu,
     train_outputs = ground_truth_interp[:start_pos]
     test_inputs = _inputs_interp[start_pos:end_pos]
     test_outputs = ground_truth_interp[start_pos:end_pos]
+    # import ipdb;ipdb.set_trace()
+    import core
+    model = core.MyModel(nb_plays=nb_plays,
+                         units=units,
+                         debug=True,
+                         activation=activation,
+                         timestep=1,
+                         input_dim=points,
+                         diff_weights=diff_weights,
+                         network_type=constants.NetworkType.PLAY,
+                         parallel_prediction=True)
+    model._make_batch_input_shape(train_inputs)
 
+    op_outputs = model.get_op_outputs_parallel(train_inputs)
+    states_list = [o[-1] for o in op_outputs]
+
+    # states_list = None
     _, pred_outputs_interp = hnn_predict(inputs=[train_inputs, test_inputs],
                                          outputs=[train_outputs, test_outputs],
                                          units=__units__,
                                          activation=__activation__,
                                          nb_plays=__nb_plays__,
                                          weights_name=weights_fname,
-                                         ensemble=ensemble)
+                                         ensemble=ensemble,
+                                         states_list=states_list)
 
-    import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
 
     #########################################################
     inputs = _inputs_interp[start_pos:end_pos]
     outputs_interp = ground_truth_interp[start_pos:end_pos]
 
     outputs = np.vstack([outputs_interp, pred_outputs_interp]).T
-    tdata.DatasetSaver.save_data(inputs, outputs, './debug-hnn-pavel-__units__-{}-__nb_plays__-{}-interp.csv'.format(__units__, __nb_plays__))
+    # tdata.DatasetSaver.save_data(inputs, outputs, './debug-hnn-pavel-__units__-{}-__nb_plays__-{}-interp.csv'.format(__units__, __nb_plays__))
     # tdata.DatasetSaver.save_data(inputs, outputs, './debug-lstm-pavel-__units__-{}.csv'.format(__units__))
+
+    tdata.DatasetSaver.save_data(inputs, outputs, './debug-hnn-dima-__units__-{}-__nb_plays__-{}-interp.csv'.format(__units__, __nb_plays__))
+    # tdata.DatasetSaver.save_data(inputs, outputs, './debug-lstm-dima-__units__-{}-interp.csv'.format(__units__))
 
     inputs = np.vstack([inputs, inputs]).T
     colors = utils.generate_colors(outputs.shape[-1])

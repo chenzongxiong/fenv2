@@ -1,0 +1,1 @@
+python run-hnn-mle-stock.py --nb_plays 0 --units 0 --__activation__ elu --batch_size 1000 --ensemble 3 --mu 0 --sigma 0 --__mu__ 0 --__sigma__ 0 --__nb_plays__ 100 --__units__ 50  --method sp --learnable-mu

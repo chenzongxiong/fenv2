@@ -89,37 +89,6 @@ if __name__ == "__main__":
     __units__ = argv.__units__
     seq = argv.seq
 
-    # if markov_chain is True:
-    #     # tmp/lstm-mle-lr-0.005-activation-None-nb_plays-20-units-1-points-1000-mu-0-sigma-110-__activation__-tanh-__units__-256.log
-    #     fname="./tmp/lstm-mle-lr-{lr}-activation-{activation}-nb_plays-{nb_plays}-units-{units}-points-{points}-mu-{mu}-sigma-{sigma}-__activation__-{__activation__}-__units__-{__units__}.log".format(
-    #         activation=activation,
-    #         lr=lr,
-    #         mu=mu,
-    #         sigma=sigma,
-    #         nb_plays=nb_plays,
-    #         units=1,
-    #         __units__=__units__,
-    #         __activation__=__activation__,
-    #         points=points
-    #     )
-    #     # ./new-dataset/lstm/diff_weights/method-sin/activation-None/state-0/input_dim-1/mu-0/sigma-110/units-1/nb_plays-20/points-2000/markov_chain/units\#-1/activation\#-tanh/loss-mle/
-
-    #     log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/markov_chain/units#-{__units__}/activation#-{__activation__}/loss-{loss}/mle-loss-lr-{lr}.csv".format(
-    #         method='sin',
-    #         activation=activation,
-    #         state=0,
-    #         input_dim=1,
-    #         mu=mu,
-    #         sigma=sigma,
-    #         units=1,
-    #         nb_plays=nb_plays,
-    #         points=2000,
-    #         __units__=__units__,
-    #         __activation__=__activation__,
-    #         lr=lr,
-    #         loss='mle'
-    #         )
-    # el
     if argv.diff_weights:
         # fname="./tmp/lstm-diff-weights-activation-{activation}-lr-{lr}-mu-{mu}-sigma-{sigma}-nb_play-{nb_plays}-units-{units}-__units__-{__units__}-points-{points}.log".format(
         #     activation=activation,
@@ -133,14 +102,15 @@ if __name__ == "__main__":
         # )
         ################################################################################
         # method = 'debug-dima'
-        activation = 'tanh'
+        activation = None
         mu = 0
-        sigma = 0.5
-        nb_plays = 50
-        units = 50
-        points = 1000
+        # sigma = 0
+        nb_plays = 0
+        units = 0
+        # points = 1000
+        points = 0
         # __units__ = 1
-        lr = 0.01
+        lr = 0.001
         # seq = 0
         # ################################################################################
         # # method = 'debug-pavel'
@@ -215,9 +185,12 @@ if __name__ == "__main__":
 
         # fname="./tmp/run-lstm-dima-sequence-multiple-times-__units__-16-{}.log".format(seq)
         # fname = 'tmp/run-lstm-dima-sequence-multiple-times-epochs-8000-{}.log'.format(seq)
-        # fname = './tmp/run-lstm-dima-sequence-multiple-times-epochs-6000-{}.log'.format(seq)
-        fname = './tmp/run-lstm-mle-known-mu-sigma-{}.log'.format(seq)
-        log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-mse/history-lr-{lr}.csv".format(
+        # fname = 'lstm-epoch-20000-sigma-110.log'
+        # fname = 'lstm.stock-sigma-10.tanh.log'
+        # fname = 'lstm.stock-sigma-10.tanh-points-1500.log'
+        fname = 'lstm.tanh.stock.sigma-10-ensemble-{}.log'.format(ensemble)
+
+        log_fname="./new-dataset/lstm/diff_weights/method-{method}/activation-{activation}/state-{state}/input_dim-{input_dim}/mu-{mu}/sigma-{sigma}/units-{units}/nb_plays-{nb_plays}/points-{points}/units#-{__units__}/ensemble-{ensemble}/loss-mle/history-lr-{lr}.csv".format(
             method=method,
             activation=activation,
             state=0,
@@ -231,6 +204,7 @@ if __name__ == "__main__":
             lr=lr,
             ensemble=ensemble
             )
+        # log_fname = './history-sigma-110.csv'
     else:
         fname="./tmp/lstm-activation-{activation}-lr-{lr}-mu-{mu}-sigma-{sigma}-nb_play-{nb_plays}-units-{units}-__units__-{__units__}-points-{points}.log".format(
             activation=activation,

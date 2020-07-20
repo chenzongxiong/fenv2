@@ -24,7 +24,8 @@ def fit(inputs,
         learning_rate=0.001,
         loss_file_name="./tmp/my_model_loss_history.csv",
         weights_name='model.h5',
-        epochs=1000):
+        epochs=1000,
+        ensemble=1):
 
     # steps_per_epoch = batch_size
 
@@ -40,7 +41,9 @@ def fit(inputs,
                       timestep=timestep,
                       units=units,
                       activation=activation,
-                      nb_plays=nb_plays)
+                      ensemble=ensemble,
+                      nb_plays=nb_plays,
+                      diff_weights=True)
     LOG.debug("Learning rate is {}".format(learning_rate))
     mymodel.fit(inputs,
                 outputs,
@@ -61,7 +64,8 @@ def predict(inputs,
             units=1,
             activation='tanh',
             nb_plays=1,
-            weights_name='model.h5'):
+            weights_name='model.h5',
+            ensemble=1):
 
     with open("{}/{}plays/input_shape.txt".format(weights_name[:-3], nb_plays), 'r') as f:
         line = f.read()
@@ -85,6 +89,7 @@ def predict(inputs,
                       units=units,
                       activation=activation,
                       nb_plays=nb_plays,
+                      ensemble=ensemble,
                       parallel_prediction=True)
 
     mymodel.load_weights(weights_fname)
@@ -143,18 +148,26 @@ if __name__ == "__main__":
     parser.add_argument('--diff-weights', dest='diff_weights',
                         required=False,
                         action="store_true")
-    parser.add_argument('--force_train', dest='force_train',
+    parser.add_argument('--force-train', dest='force_train',
                         required=False,
                         action="store_true")
     parser.add_argument("--method", dest="method",
                         required=False,
                         default='sin',
                         type=str)
+
+    parser.add_argument('--ensemble', dest='ensemble',
+                        required=False,
+                        type=int,
+                        default=1)
+
     argv = parser.parse_args(sys.argv[1:])
+
 
 
     loss_name = 'mse'
     method = argv.method
+    ensemble = argv.ensemble
     input_dim = 1
     state = 0
     __state__ = 0
@@ -204,6 +217,7 @@ if __name__ == "__main__":
                                                                                __state__=__state__,
                                                                                __units__=__units__,
                                                                                __nb_plays__=__nb_plays__,
+                                                                               ensemble=ensemble,
                                                                                loss=loss_name)
 
     predict_fname = constants.DATASET_PATH[predict_fname_key].format(method=method,
@@ -219,7 +233,9 @@ if __name__ == "__main__":
                                                                     __state__=__state__,
                                                                     __units__=__units__,
                                                                     __nb_plays__=__nb_plays__,
+                                                                    ensemble=ensemble,
                                                                     loss=loss_name)
+
 
     weights_fname = constants.DATASET_PATH[weight_fname_key].format(method=method,
                                                                     activation=activation,
@@ -234,6 +250,7 @@ if __name__ == "__main__":
                                                                     __state__=__state__,
                                                                     __units__=__units__,
                                                                     __nb_plays__=__nb_plays__,
+                                                                    ensemble=ensemble,
                                                                     loss=loss_name)
 
     LOG.debug("==================== INFO ====================")
@@ -248,8 +265,14 @@ if __name__ == "__main__":
     LOG.debug(colors.cyan("force_train: {}".format(force_train)))
     LOG.debug("==============================================")
 
-    train_inputs, train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
-    test_inputs, test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
+    # train_inputs, train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
+    # test_inputs, test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
+    inputs, outputs = tdata.DatasetLoader.load_data(input_fname)
+    _inputs, _outputs = inputs[:1000], outputs[:1000]
+    # train_inputs, train_outputs = _inputs[:1500], _outputs[:1500]
+    # test_inputs, test_outputs = _inputs[1500:], _outputs[1500:]
+    train_inputs, train_outputs = _inputs[:600], _outputs[:600]
+    test_inputs, test_outputs = _inputs[600:], _outputs[600:]
 
     fit(inputs=train_inputs,
         outputs=train_outputs,
@@ -259,6 +282,7 @@ if __name__ == "__main__":
         learning_rate=learning_rate,
         loss_file_name=loss_history_fname,
         weights_name=weights_fname,
+        ensemble=ensemble,
         epochs=epochs)
 
     test_inputs, predictions = predict(inputs=[train_inputs, test_inputs],
@@ -266,6 +290,7 @@ if __name__ == "__main__":
                                        units=__units__,
                                        activation=__activation__,
                                        nb_plays=__nb_plays__,
+                                       ensemble=ensemble,
                                        weights_name=weights_fname)
 
     tdata.DatasetSaver.save_data(test_inputs, predictions, predict_fname)

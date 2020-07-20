@@ -21,6 +21,7 @@ session = utils.get_session()
 
 # input vs. output
 def gru(input_fname, units, epochs=1000, weights_fname=None, force_train=False, learning_rate=0.001):
+
     _train_inputs, _train_outputs = tdata.DatasetLoader.load_train_data(input_fname)
     _test_inputs, _test_outputs = tdata.DatasetLoader.load_test_data(input_fname)
 

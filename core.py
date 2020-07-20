@@ -51,7 +51,6 @@ tf.keras.backend.set_epsilon(1e-9)
 
 hacking = 1
 
-
 def do_guess_helper(step, direction, start_price, nb_plays, activation, sign, prev_states, weights, delta=0.001):
     '''
     Parameters:
@@ -290,14 +289,23 @@ def repeat(k,
 
     guess_price_seq_stack_ = np.array(guess_price_seq_stack)
     bk_list_ = np.array(bk_list)
-    # LOG.debug("guess_price_seq_stack_: {}".format(guess_price_seq_stack_))
-    # LOG.debug("guess_price_seq_stack_.shape: {}".format(guess_price_seq_stack_.shape))
+    LOG.debug("guess_price_seq_stack_: {}".format(guess_price_seq_stack_))
+    LOG.debug("guess_price_seq_stack_.shape: {}".format(guess_price_seq_stack_.shape))
     # LOG.debug("guess_price_seq_stack_.mean(): {}".format(guess_price_seq_stack_.mean()))
     # LOG.debug("guess_price_seq_stack_.std(): {}".format(guess_price_seq_stack_.std()))
 
     avg_guess = guess_price_seq_stack_.mean(axis=0)[-1]
     LOG.debug(colors.red(logger_string3.format(k, float(avg_guess), float(curr_gt_price), float(prev_gt_price), float(guess_price_seq_stack_.std()))))
     LOG.debug("********************************************************************************")
+    hysteresis_guess_list = []
+
+    for i, guess_hysteresis_list in enumerate(hysteresis_info):
+        hysteresis_guess_list += guess_hysteresis_list[0]
+
+    os.makedirs('./frames-mu-{}-sigma-{}-ensemble-17'.format(mu, sigma), exist_ok=True)
+    np.savetxt('./frames-mu-{}-sigma-{}-ensemble-17/guess-{}.csv'.format(mu, sigma, k), np.array(hysteresis_guess_list), fmt='%.3f', delimiter=',')
+    np.savetxt('./frames-mu-{}-sigma-{}-ensemble-17/guess-hnn-{}.csv'.format(mu, sigma, k), guess_hnn_lstm, fmt='%.3f', delimiter=',')
+
     utils.plot_internal_transaction(hysteresis_info, k, predicted_price=float(avg_guess), mu=real_mu, sigma=real_sigma, guess_price_seq=guess_price_seq_stack_, bk_list=bk_list_, ensemble=ensemble)
 
     return avg_guess
@@ -1377,7 +1385,7 @@ class MyModel(Layer):
             else:
                 weight = 1.0
 
-            weight = 2 * (nb_play + 1)
+            # weight = 2 * (nb_play + 1)
             LOG.debug("MyModel {} generates {} with Weight: {}".format(self._ensemble, colors.red("Play #{}".format(nb_play+1)), weight))
 
             play = Play(units=units,
@@ -1674,7 +1682,7 @@ class MyModel(Layer):
                 return
 
             # normalized_J_by_hand = tf.clip_by_value(tf.abs(self.J_by_hand), clip_value_min=1e-18, clip_value_max=1e18)
-            normalized_J_by_hand = tf.clip_by_value(tf.keras.backend.square(self.J_by_hand), clip_value_min=1e-18, clip_value_max=1e18)
+            normalized_J_by_hand = tf.clip_by_value(tf.keras.backend.abs(self.J_by_hand), clip_value_min=1e-18, clip_value_max=1e18)
 
 
             # TODO: support derivation for p0
@@ -1715,15 +1723,27 @@ class MyModel(Layer):
                 # self.params_list += self._initial_states_list
 
             else:
+                LOG.debug(colors.red("Using Learnable Sigma Version"))
+                self._set_dtype_and_policy(dtype=tf.float32)
+
+                self.sigma = self.add_weight(
+                    "sigma",
+                    dtype=tf.float32,
+                    initializer=tf.keras.initializers.Constant(value=1.0, dtype=tf.float32),
+                    trainable=True)
+                self.loss_a = tf.keras.backend.square((self.diff - mu)/self.sigma) / 2 + tf.keras.backend.log(self.sigma*self.sigma)
+                self.curr_sigma = self.sigma
+                self.params_list.append(self.sigma)
+
                 # self.loss_a = tf.keras.backend.square((self.diff - mu)/sigma) / 2
-                self.loss_a = tf.keras.backend.square((self.diff - mu)/sigma)
+                # self.loss_a = tf.keras.backend.square((self.diff - mu)/sigma)
 
             self.loss_b = - tf.keras.backend.log(normalized_J_by_hand)
             # self.loss_by_hand = tf.keras.backend.mean(self.loss_a + self.loss_b)
             # self.loss_by_hand = tf.keras.backend.sum(self.loss_a + self.loss_b)
             self.loss_by_hand = tf.math.reduce_sum(self.loss_a + self.loss_b)
             # import ipdb; ipdb.set_trace()
-            self.loss = self.loss_by_hand / 2
+            self.loss = self.loss_by_hand
 
             # 10-14
             self.reg_lambda = 0.001
@@ -1791,7 +1811,9 @@ class MyModel(Layer):
             __mu__ = (outputs[1:] - outputs[:-1]).mean()
             __sigma__ = (outputs[1:] - outputs[:-1]).std()
             outputs = ops.convert_to_tensor(outputs, tf.float32)
-
+        else:
+            __mu__ = 0
+            __sigma__ = -1
         # self.compile(inputs, mu=mu, sigma=sigma, outputs=outputs, **kwargs)
         training_inputs, validate_inputs = inputs[:self._input_dim], inputs[self._input_dim:]
         if outputs is not None:
@@ -1900,7 +1922,7 @@ class MyModel(Layer):
 
     def trend(self, prices, B, mu, sigma,
               start_pos=1000, end_pos=1100,
-              delta=0.001, max_iteration=10000):
+              delta=0.001, max_iteration=10000, states_list=None):
         # start_pos = 1000
         # # end_pos = 1100
         # end_pos = 1100
@@ -1910,8 +1932,8 @@ class MyModel(Layer):
         # end_pos = 1010
 
         start_pos = 10
+        end_pos = 210
         # end_pos = 15
-        end_pos = 110
 
         assert start_pos >= 0, colors.red("start_pos must be larger than 0")
         assert start_pos < end_pos, colors.red("start_pos must be less than end_pos")
@@ -1927,7 +1949,7 @@ class MyModel(Layer):
         else:
             raise Exception(colors.red("Unknown **input_dim** error occurs in trend"))
 
-        prices = np.hstack([prices[1500:2000],  prices[0:1000]])
+        prices = np.hstack([prices[1300:1700],  prices[0:900]])
 
         timestep = prices.shape[0] // input_dim
         shape = (1, timestep, input_dim)
@@ -1938,14 +1960,16 @@ class MyModel(Layer):
         # mu: use empirical mean                                                       #
         # sigma: use empirical standard derviation                                     #
         ################################################################################
-        original_prediction = self.predict_parallel(prices)
+        original_prediction = self.predict_parallel(prices, states_list=states_list)
+        # import ipdb; ipdb.set_trace()
         prices = prices[:original_prediction.shape[-1]]
         real_mu, real_sigma = mu, sigma
         if start_pos > 0:
             mu = (original_prediction[1:start_pos] - original_prediction[:start_pos-1]).mean()
             sigma = (original_prediction[1:start_pos] - original_prediction[:start_pos-1]).std()
+
         mu = 0
-        sigma = 110
+        sigma = 20
 
         LOG.debug(colors.cyan("emprical mean: {}, emprical standard dervation: {}".format(mu, sigma)))
         ################################################################################

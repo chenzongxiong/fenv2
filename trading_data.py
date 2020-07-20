@@ -223,6 +223,7 @@ class DatasetGenerator(object):
                                   method=None,
                                   diff_weights=False,
                                   individual=False):
+
         import core
         if inputs is not None:
             points = inputs.shape[-1]
@@ -262,7 +263,6 @@ class DatasetGenerator(object):
                              diff_weights=diff_weights,
                              network_type=constants.NetworkType.PLAY,
                              parallel_prediction=True)
-
         model._make_batch_input_shape(_inputs)
 
         outputs, individual_outputs = model.predict_parallel(_inputs, individual=True)
@@ -286,12 +286,22 @@ class DatasetLoader(object):
     _CACHED_DATASET = {}
 
     @classmethod
-    def load_data(cls, fname):
+    def load_data(cls, fname, columns=['inputs', 'outputs']):
         if fname in cls._CACHED_DATASET:
             return cls._CACHED_DATASET[fname]
 
         data = np.loadtxt(fname, skiprows=0, delimiter=",", dtype=np.float32)
-        inputs, outputs = data[:, 0], data[:, 1:].T
+        if 'inputs' in columns and 'outputs' in columns:
+            inputs, outputs = data[:, 0], data[:, 1:].T
+        elif 'inputs' in columns:
+            if len(data.shape) == 2:
+                inputs = data[:, 0]
+            else:
+                inputs = data[:]
+            return inputs, None
+        else:
+            raise Exception('error in load data...')
+
         assert len(inputs.shape) == 1
         if len(outputs.shape) == 2:
             n, d = outputs.shape

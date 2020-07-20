@@ -232,11 +232,12 @@ def lstm_4(input_fname, units, capacity=1, epochs=5000):
     print("time cost: {}".format(end- start))
 
 
-def lstm_5(input_fname, units, capacity=1, epochs=5000):
+def lstm_5(input_fname, units, capacity=1, epochs=5000, ensemble=1):
     # https://www.kaggle.com/pablocastilla/predict-stock-prices-with-lstm
     start = time.time()
-    units = 600
-    _prices, _ = tdata.DatasetLoader.load_data(input_fname)
+    # units = 600
+    units = 1300
+    _prices, _ = tdata.DatasetLoader.load_data(input_fname, columns=['inputs'])
 
     prices1 = _prices[:units]
     prices2 = _prices[1:units+1]
@@ -286,15 +287,15 @@ def lstm_5(input_fname, units, capacity=1, epochs=5000):
     predictions = model.predict(pred_inputs)
     pred_outputs = predictions.reshape(-1)
 
-    mse = np.mean((truth_outputs[:100] - pred_outputs[:100]) ** 2)
-    print("LSTM mse: {}".format(mse))
-
+    # mse = np.mean((truth_outputs[:100] - pred_outputs[:100]) ** 2)
+    # print("LSTM mse: {}".format(mse))
+    # import ipdb;ipdb.set_trace()
     output_fname = "new-dataset/lstm/lstm5/price_vs_price/units-{units}/capacity-{capacity}/ensemble-{ensemble}/predictions.csv".format(units=units, capacity=capacity, ensemble=ensemble)
     tdata.DatasetSaver.save_data(pred_inputs.reshape(-1), pred_outputs.reshape(-1), output_fname)
 
     end = time.time()
     print("time cost: {}".format(end- start))
-
+    print("prediction: {}".format(output_fname))
 
 
 
@@ -302,8 +303,10 @@ if __name__ == "__main__":
 
     # input_fname = "new-dataset/models/diff_weights/method-sin/activation-None/state-0/markov_chain/mu-0/sigma-110/units-10000/nb_plays-20/points-1000/input_dim-1/mu-0-sigma-110-points-1000.csv"
     # input_fname = "new-dataset/models/diff_weights/method-sp/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
-    input_fname = "new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
-
+    # input_fname = "new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
+    # input_fname = "new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays-0/points-0/input_dim-1/base.csv"
+    # input_fname = 'new-dataset/models/diff_weights/method-sp/activation-None/state-0/mu-0/sigma-0/units-0/nb_plays/points-0/input-dim-1/base.csv'
+    input_fname = './new-dataset/models/diff_weights/method-stock/activation-None/state-0/mu-0/sigma-20/units-0/nb_plays-0/points-0/input_dim-1/base.csv'
     parser = argparse.ArgumentParser()
     parser.add_argument("--capacity", dest="capacity",
                         required=False, default=1,
@@ -326,12 +329,13 @@ if __name__ == "__main__":
     units = 1500
     epochs = argv.epochs
     capacity = argv.capacity
-
+    ensemble = argv.ensemble
     print("====================INFO====================")
     print("units: {}".format(units))
     print("method: {}".format(method))
     print("epochs: {}".format(epochs))
     print("capacity: {}".format(capacity))
+    print("ensemble: {}".format(ensemble))
     print("================================================================================")
 
     if method == 1:

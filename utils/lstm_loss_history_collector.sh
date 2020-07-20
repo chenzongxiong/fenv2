@@ -8,7 +8,7 @@ nb_plays=50
 __units__array=()
 ensemble_array=()
 
-for __units__ in 1 8 16 32 64 128
+for __units__ in 64
 do
     for ensemble in {1..20}
     do
@@ -17,10 +17,10 @@ do
     done
 done
 
-# sigma=0
-# for seq in {20..59}
-# do
-#     ensemble=${ensemble_array[seq]}
-#     __units__=${__units__array[seq]}
-#     python utils/lstm_filter_loss.py --units ${units} --nb_plays ${nb_plays} --points 1000 --sigma ${sigma} --mu 0 --lr 0.01 --__units__ ${__units__} --diff-weights --seq ${seq} --ensemble ${ensemble} --method debug-dima
-# done
+sigma=10
+for seq in {1..20}
+do
+    ensemble=${ensemble_array[seq]}
+    __units__=${__units__array[seq]}
+    python utils/lstm_filter_loss.py --units ${units} --nb_plays ${nb_plays} --points 1000 --sigma ${sigma} --mu 0 --lr 0.01 --__units__ ${__units__} --diff-weights --seq ${seq} --ensemble ${ensemble} --method stock --markov-chain
+done

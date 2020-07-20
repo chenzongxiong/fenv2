@@ -461,6 +461,13 @@ def lstm_mle(input_fname, units, epochs=1000, weights_fname=None, force_train=Fa
     test_inputs = test_inputs.reshape(1, -1, 1)
     test_outputs = _test_outputs.reshape(-1)
 
+
+    eval_outputs = model.predict(train_inputs)
+    eval_outputs = eval_outputs.reshape(-1)
+    eval_mu = (eval_outputs[1:] - eval_outputs[:-1]).mean()
+    eval_sigma = (eval_outputs[1:] - eval_outputs[:-1]).std()
+    LOG.debug(colors.red("diff mu: {}, diff sigma: {}".format(eval_mu, eval_sigma)))
+
     predictions = model.predict(test_inputs)
     pred_outputs = predictions.reshape(-1)
     pred_outputs = pred_outputs[:_test_inputs.shape[0]]
@@ -468,7 +475,111 @@ def lstm_mle(input_fname, units, epochs=1000, weights_fname=None, force_train=Fa
 
     LOG.debug(colors.red("LSTM rmse: {}".format(rmse)))
 
-    return _test_inputs, pred_outputs, rmse, end-start
+    __test_inputs = np.zeros(shape=(_test_inputs.shape[0]+2,))
+    __pred_outputs = np.zeros(shape=(pred_outputs.shape[0]+2,))
+    # __test_inputs[:-1] = _test_inputs
+    __pred_outputs[:-2] = pred_outputs
+    __pred_outputs[-2] = eval_mu
+    __pred_outputs[-1] = eval_sigma
+
+    return __test_inputs, __pred_outputs, rmse, end-start
+
+
+
+def lstm_mle_predict(input_fname, units, epochs=1000, weights_fname=None, force_train=False, learning_rate=0.001, mu=0, sigma=1, activation='tanh'):
+
+    LOG.debug(colors.cyan("Using MLE to train LSTM network, mu: {}, sigma: {}...".format(mu, sigma)))
+    inputs, outputs = tdata.DatasetLoader.load_data(input_fname)
+    inputs, outputs = inputs[:1700], outputs[:1700]
+    _train_inputs, _train_outputs = inputs[:1300], outputs[:1300]
+    _test_inputs, _test_outputs = inputs[1300:], outputs[1300:]
+
+    # inputs, outputs = inputs[:1000], outputs[:1000]
+    # _train_inputs, _train_outputs = inputs[:600], outputs[:600]
+    # _test_inputs, _test_outputs = inputs[600:], outputs[600:]
+
+    train_inputs = _train_inputs.reshape(1, -1, 1)
+    train_outputs = _train_outputs.reshape(1, -1, 1)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999, amsgrad=False)
+    # early_stopping_callback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=500)
+    start = time.time()
+
+    x = tf.keras.layers.Input(shape=(_train_inputs.shape[0], 1), batch_size=1)
+
+    z, h_tm1, c_tm1 = tf.keras.layers.LSTM(int(units),
+                                           input_shape=(_train_inputs.shape[0], 1),
+                                           unroll=False,
+                                           return_sequences=True,
+                                           return_state=True,
+                                           use_bias=True,
+                                           stateful=True,
+                                           batch_size=1,
+                                           activation=activation,
+                                           implementation=2)(x)
+    y = tf.keras.layers.Dense(1)(z)
+
+    model = tf.keras.models.Model(inputs=x, outputs=y)
+
+    # model.compile(loss='mse', optimizer=optimizer, metrics=['mse'])
+    # mu = 0
+    # sigma = 1
+    model.compile(loss=mle_loss(model, mu, sigma, activation), optimizer=optimizer, metrics=['mse',
+                                                                                             mle_loss(model, mu, sigma, activation, 'loss'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'loss1'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'loss2'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_o'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_i'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_c'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_h'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_b'),
+                                                                                             mle_loss(model, mu, sigma, activation, 'd_f'),
+
+                ])
+
+    model.summary()
+
+    # if force_train or not os.path.isfile(weights_fname) :
+    #     model.fit(train_inputs, train_outputs, epochs=epochs, verbose=1,
+    #               # callbacks=[early_stopping_callback],
+    #               # validation_split=0.05,  # need to fix bug of sample
+    #               batch_size=1,
+    #               shuffle=False)
+    #     os.makedirs(os.path.dirname(weights_fname), exist_ok=True)
+    #     model.save_weights(weights_fname)
+    # else:
+    model.load_weights(weights_fname)
+
+    end = time.time()
+
+    LOG.debug(colors.red("time cost: {}s".format(end- start)))
+
+    test_inputs = np.hstack([_test_inputs, np.zeros(_train_inputs.shape[0]-_test_inputs.shape[0])])
+    test_inputs = test_inputs.reshape(1, -1, 1)
+    test_outputs = _test_outputs.reshape(-1)
+
+
+    eval_outputs = model.predict(train_inputs)
+    eval_outputs = eval_outputs.reshape(-1)
+    eval_mu = (eval_outputs[1:] - eval_outputs[:-1]).mean()
+    eval_sigma = (eval_outputs[1:] - eval_outputs[:-1]).std()
+    LOG.debug(colors.red("diff mu: {}, diff sigma: {}".format(eval_mu, eval_sigma)))
+
+    predictions = model.predict(test_inputs)
+    pred_outputs = predictions.reshape(-1)
+    pred_outputs = pred_outputs[:_test_inputs.shape[0]]
+    rmse = np.sqrt(np.mean((pred_outputs - test_outputs) ** 2))
+
+    LOG.debug(colors.red("LSTM rmse: {}".format(rmse)))
+
+    __test_inputs = np.zeros(shape=(_test_inputs.shape[0]+2,))
+    __pred_outputs = np.zeros(shape=(pred_outputs.shape[0]+2,))
+    # __test_inputs[:-1] = _test_inputs
+    __pred_outputs[:-2] = pred_outputs
+    __pred_outputs[-2] = eval_mu
+    __pred_outputs[-1] = eval_sigma
+
+    return __test_inputs, __pred_outputs, rmse, end-start
+
 
 
 if __name__ == "__main__":
